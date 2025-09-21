@@ -8,6 +8,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useToast } from "@/hooks/use-toast";
 import { User, Mail, Lock, Car, Upload, Eye, EyeOff } from "lucide-react";
 import { loginWithGoogle } from "@/firebase";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -26,11 +28,22 @@ const AuthModal = ({ isOpen, onClose, userType }: AuthModalProps) => {
     idProof: null as File | null,
   });
   const { toast } = useToast();
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // This is just UI - actual authentication will be handled by Supabase
+    // Simulate successful login/registration
+    const userData = {
+      name: formData.name || "Demo User",
+      email: formData.email,
+      role: userType === "student" ? "user" : "driver",
+    };
+    
+    // Update authentication context
+    login(userData);
+    
     toast({
       title: isLogin ? "Login Successful!" : "Account Created!",
       description: isLogin 
@@ -47,6 +60,9 @@ const AuthModal = ({ isOpen, onClose, userType }: AuthModalProps) => {
       idProof: null,
     });
     onClose();
+    
+    // Navigate to book ride page after successful login
+    navigate("/book-ride");
   };
 
   const handleInputChange = (field: string, value: string | File | null) => {
@@ -137,7 +153,14 @@ const AuthModal = ({ isOpen, onClose, userType }: AuthModalProps) => {
                       type="button"
                       variant="outline" 
                       className="w-full"
-                      onClick={() => loginWithGoogle(userType === "student" ? "user" : "driver")}
+                      onClick={async () => {
+                        try {
+                          await loginWithGoogle(userType === "student" ? "user" : "driver");
+                          onClose();
+                        } catch (error) {
+                          console.error("Google login failed:", error);
+                        }
+                      }}
                     >
                       <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24">
                         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -265,7 +288,14 @@ const AuthModal = ({ isOpen, onClose, userType }: AuthModalProps) => {
                       type="button"
                       variant="outline" 
                       className="w-full"
-                      onClick={() => loginWithGoogle(userType === "student" ? "user" : "driver")}
+                      onClick={async () => {
+                        try {
+                          await loginWithGoogle(userType === "student" ? "user" : "driver");
+                          onClose();
+                        } catch (error) {
+                          console.error("Google login failed:", error);
+                        }
+                      }}
                     >
                       <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24">
                         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>

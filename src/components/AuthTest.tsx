@@ -13,17 +13,14 @@ const AuthTest = () => {
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto">
+    <Card>
       <CardHeader>
-        <CardTitle>Google Auth Test</CardTitle>
+        <CardTitle>Auth Test Component</CardTitle>
       </CardHeader>
       <CardContent>
-        <Button onClick={testGoogleAuth} className="w-full">
-          Test Google Authentication
+        <Button onClick={testGoogleAuth}>
+          Test Google Auth
         </Button>
-        <p className="text-sm text-muted-foreground mt-2">
-          Check browser console for detailed logs
-        </p>
       </CardContent>
     </Card>
   );

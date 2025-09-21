@@ -17,198 +17,215 @@ interface UserData {
 
 const StudentDashboard = () => {
   const [user, setUser] = useState<UserData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (userData) {
       setUser(JSON.parse(userData));
     } else {
-      // Redirect to home if no user data
       window.location.href = "/";
     }
+    setLoading(false);
   }, []);
 
   const handleLogout = async () => {
     await logout();
   };
 
-  if (!user) {
+  if (loading || !user) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Loading...</p>
+          <div className="animate-spin rounded-full h-20 w-20 border-b-4 border-yellow-400 mx-auto"></div>
+          <p className="mt-3 text-black text-lg">Loading...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white text-gray-900">
       <Navigation />
       <FloatingCTA />
-      
-      <div className="container mx-auto max-w-6xl px-4 py-8 sm:py-12">
-        {/* Welcome Section */}
-        <div className="fade-in text-center mb-10 sm:mb-12">
-          <div className="w-20 h-20 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center mx-auto mb-6">
+
+      <main className="container mx-auto px-6 py-12 max-w-6xl">
+
+        {/* Welcome Header */}
+        <section className="mb-12 rounded-lg p-8 bg-gradient-to-r from-orange-400 via-yellow-400 to-orange-500 shadow-lg flex flex-col md:flex-row items-center gap-10 animate-fade-slideUp">
+          <div className="relative w-28 h-28 rounded-full cursor-pointer overflow-hidden flex items-center justify-center
+            bg-yellow-200 shadow-lg shadow-yellow-400/40 animate-pulse">
             {user.photo ? (
               <img 
                 src={user.photo} 
                 alt={user.name} 
-                className="w-16 h-16 rounded-full object-cover"
+                className="rounded-full w-24 h-24 object-cover transition-transform duration-300 ease-in-out hover:scale-110"
               />
             ) : (
-              <User className="w-12 h-12 text-white" />
+              <User className="w-20 h-20 text-orange-600" />
             )}
+            <div className="absolute inset-0 rounded-full border-4 border-yellow-300 pointer-events-none"></div>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold mb-3 sm:mb-4">
-            Welcome back, {user.name?.split(' ')[0]}!
-          </h1>
-          <p className="text-base sm:text-xl text-muted-foreground">
-            Ready for your next campus ride?
-          </p>
-        </div>
+          <div className="flex-grow text-center md:text-left">
+            <h1 className="text-4xl font-extrabold mb-2 text-white drop-shadow-lg">
+              Welcome back, {user.name.split(' ')[0]}!
+            </h1>
+            <p className="text-lg text-yellow-100 font-medium tracking-wide">
+              Ready for your next campus ride? Let’s roll! 🚀
+            </p>
+          </div>
+        </section>
 
         {/* Quick Actions */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
-          <Link to="/book-ride" className="block">
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-              <CardContent className="p-6 text-center">
-                <Car className="w-8 h-8 text-primary mx-auto mb-3" />
-                <h3 className="font-semibold mb-2">Book a Ride</h3>
-                <p className="text-sm text-muted-foreground">Find a Hero nearby</p>
-              </CardContent>
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-14">
+          <Link to="/book-ride" className="transform transition-transform hover:scale-105 cursor-pointer rounded-lg shadow-md hover:shadow-yellow-400 bg-yellow-300 hover:bg-yellow-400 duration-300">
+            <Card className="bg-transparent p-6 text-center cursor-pointer">
+              <Car className="mx-auto mb-5 w-12 h-12 text-orange-700" />
+              <h3 className="text-2xl font-semibold mb-1 text-black">Book a Ride</h3>
+              <p className="text-sm text-orange-800">Find your Hero nearby quickly</p>
             </Card>
           </Link>
-
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-            <CardContent className="p-6 text-center">
-              <History className="w-8 h-8 text-secondary mx-auto mb-3" />
-              <h3 className="font-semibold mb-2">Ride History</h3>
-              <p className="text-sm text-muted-foreground">View past rides</p>
-            </CardContent>
+          <Card className="p-6 text-center shadow-md rounded-lg hover:shadow-yellow-300 cursor-pointer bg-yellow-50 hover:bg-yellow-100 hover:scale-105 transform transition-transform duration-300">
+            <History className="mx-auto mb-5 w-12 h-12 text-orange-700" />
+            <h3 className="text-2xl font-semibold mb-1 text-black">Ride History</h3>
+            <p className="text-sm text-orange-700">View previous journeys</p>
           </Card>
-
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-            <CardContent className="p-6 text-center">
-              <Wallet className="w-8 h-8 text-success mx-auto mb-3" />
-              <h3 className="font-semibold mb-2">Wallet</h3>
-              <p className="text-sm text-muted-foreground">Manage payments</p>
-            </CardContent>
+          <Card className="p-6 text-center shadow-md rounded-lg hover:shadow-yellow-300 cursor-pointer bg-yellow-50 hover:bg-yellow-100 hover:scale-105 transform transition-transform duration-300">
+            <Wallet className="mx-auto mb-5 w-12 h-12 text-orange-700" />
+            <h3 className="text-2xl font-semibold mb-1 text-black">Wallet</h3>
+            <p className="text-sm text-orange-700">Manage your payments</p>
           </Card>
-
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-            <CardContent className="p-6 text-center">
-              <Settings className="w-8 h-8 text-muted-foreground mx-auto mb-3" />
-              <h3 className="font-semibold mb-2">Settings</h3>
-              <p className="text-sm text-muted-foreground">Account preferences</p>
-            </CardContent>
+          <Card className="p-6 text-center rounded-lg shadow-md hover:shadow-yellow-300 cursor-pointer bg-yellow-50 hover:bg-yellow-100 hover:scale-105 transform transition-transform duration-300">
+            <Settings className="mx-auto mb-5 w-12 h-12 text-orange-700" />
+            <h3 className="text-2xl font-semibold mb-1 text-black">Settings</h3>
+            <p className="text-sm text-orange-700">Account preferences</p>
           </Card>
-        </div>
+        </section>
 
-        {/* Recent Activity */}
-        <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 mb-8">
-          <Card className="slide-up">
+        {/* Recent Activity & Wallet Summary */}
+        <section className="grid lg:grid-cols-2 gap-12 mb-16">
+          <Card className="p-8 rounded-lg shadow-md hover:shadow-yellow-300 transition-shadow duration-300 bg-yellow-50">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Clock className="w-5 h-5" />
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <Clock className="w-6 h-6 text-orange-700" />
                 Recent Rides
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <MapPin className="w-4 h-4 text-primary" />
+              <div className="space-y-5">
+                <div className="flex justify-between bg-white rounded-lg p-4 items-center shadow-sm">
+                  <div className="flex gap-3 items-center">
+                    <MapPin className="w-5 h-5 text-yellow-500" />
                     <div>
-                      <p className="font-medium">Main Gate → Hostel A</p>
-                      <p className="text-sm text-muted-foreground">Yesterday, 2:30 PM</p>
+                      <p className="font-semibold text-orange-800">Main Gate → Hostel A</p>
+                      <p className="text-sm text-yellow-600">Yesterday, 2:30 PM</p>
                     </div>
                   </div>
-                  <span className="text-sm font-medium text-success">Completed</span>
+                  <span className="text-sm font-semibold text-green-600">Completed</span>
                 </div>
-                <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <MapPin className="w-4 h-4 text-primary" />
+                <div className="flex justify-between bg-white rounded-lg p-4 items-center shadow-sm">
+                  <div className="flex gap-3 items-center">
+                    <MapPin className="w-5 h-5 text-yellow-500" />
                     <div>
-                      <p className="font-medium">Library → Canteen</p>
-                      <p className="text-sm text-muted-foreground">2 days ago, 11:15 AM</p>
+                      <p className="font-semibold text-orange-800">Library → Canteen</p>
+                      <p className="text-sm text-yellow-600">2 days ago, 11:15 AM</p>
                     </div>
                   </div>
-                  <span className="text-sm font-medium text-success">Completed</span>
+                  <span className="text-sm font-semibold text-green-600">Completed</span>
                 </div>
                 <div className="text-center">
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" className="mt-4 text-yellow-600 border-yellow-600 hover:bg-yellow-600 hover:text-white">
                     View All Rides
                   </Button>
                 </div>
               </div>
             </CardContent>
           </Card>
-
-          <Card className="slide-up">
+          <Card className="p-8 rounded-lg shadow-md hover:shadow-yellow-300 transition-shadow duration-300 bg-yellow-50">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Wallet className="w-5 h-5" />
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <Wallet className="w-6 h-6 text-orange-700" />
                 Wallet Summary
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="text-center p-4 bg-primary/5 rounded-lg">
-                  <p className="text-2xl font-bold text-primary">₹150</p>
-                  <p className="text-sm text-muted-foreground">Available Balance</p>
+            <CardContent className="text-center">
+              <p className="text-4xl font-bold text-orange-800 mb-2">₹150</p>
+              <p className="text-yellow-600 mb-4">Available Balance</p>
+              <div className="grid grid-cols-2 gap-6 mb-4 text-orange-700">
+                <div>
+                  <p className="text-2xl font-semibold">5</p>
+                  <p className="text-sm">Total Rides</p>
                 </div>
-                <div className="grid grid-cols-2 gap-4 text-center">
-                  <div className="p-3 bg-muted/50 rounded-lg">
-                    <p className="text-lg font-semibold">5</p>
-                    <p className="text-xs text-muted-foreground">Total Rides</p>
-                  </div>
-                  <div className="p-3 bg-muted/50 rounded-lg">
-                    <p className="text-lg font-semibold">₹450</p>
-                    <p className="text-xs text-muted-foreground">Total Spent</p>
-                  </div>
+                <div>
+                  <p className="text-2xl font-semibold">₹450</p>
+                  <p className="text-sm">Total Spent</p>
                 </div>
-                <Button variant="outline" size="sm" className="w-full">
-                  Add Money
-                </Button>
               </div>
+              <Button variant="outline" size="sm" className="w-full border-yellow-600 text-yellow-600 hover:bg-yellow-600 hover:text-white">
+                Add Money
+              </Button>
             </CardContent>
           </Card>
-        </div>
+        </section>
 
-        {/* Quick Book Ride */}
-        <Card className="slide-up mb-8">
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <h3 className="text-xl font-semibold mb-4">Need a ride right now?</h3>
-              <p className="text-muted-foreground mb-6">
-                Book a ride with our Heroes and get to your destination safely and affordably.
-              </p>
-              <Link to="/book-ride">
-                <Button variant="hero" size="lg" className="w-full sm:w-auto">
-                  <Car className="w-5 h-5 mr-2" />
-                  Book a Ride
-                </Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Quick Book Ride Call to Action */}
+        <section className="mb-20 text-center animate-fade-slideUp">
+          <Card className="p-10 rounded-lg bg-gradient-to-r from-orange-400 to-yellow-400 shadow-lg cursor-pointer hover:shadow-yellow-500 transition-shadow duration-300">
+            <h3 className="text-3xl font-bold mb-3 text-black">Need a ride right now?</h3>
+            <p className="mb-6 text-yellow-900 font-medium">
+              Book a ride with our Heroes and get to your destination quickly and safely.
+            </p>
+            <Link to="/book-ride" className="inline-block">
+              <Button variant="hero" size="lg" className="tracking-wider uppercase text-black">
+                <Car className="w-6 h-6 mr-2 inline" />
+                Book a Ride
+              </Button>
+            </Link>
+          </Card>
+        </section>
 
         {/* Logout Section */}
-        <div className="text-center">
+        <section className="mb-14 text-center animate-fade-slideUp">
           <Button 
             variant="outline" 
-            onClick={handleLogout}
-            className="text-muted-foreground hover:text-foreground"
+            onClick={handleLogout} 
+            className="border-yellow-600 text-yellow-600 hover:bg-yellow-600 hover:text-white"
           >
-            <LogOut className="w-4 h-4 mr-2" />
+            <LogOut className="w-5 h-5 mr-2 inline-block" />
             Sign Out
           </Button>
-        </div>
-      </div>
+        </section>
+      </main>
+      
       <Footer />
+
+      {/* Global CSS animations */}
+      <style>{`
+        @keyframes pulse {
+          0%, 100% {
+            box-shadow: 0 0 8px 3px rgba(253, 224, 71, 0.6);
+          }
+          50% {
+            box-shadow: 0 0 12px 6px rgba(253, 224, 71, 0.85);
+          }
+        }
+        .animate-pulse {
+          animation: pulse 3s ease-in-out infinite;
+        }
+        @keyframes fadeSlideUp {
+          from {
+            opacity: 0;
+            transform: translateY(25px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fade-slideUp {
+          animation: fadeSlideUp 0.6s ease forwards;
+        }
+      `}</style>
     </div>
   );
 };

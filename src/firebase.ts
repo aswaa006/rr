@@ -25,20 +25,18 @@ export const loginWithGoogle = async (role: "user" | "driver") => {
     const user = result.user;
     console.log("Authentication successful:", user);
 
-    localStorage.setItem("user", JSON.stringify({ 
+    const userData = { 
       email: user.email, 
       name: user.displayName, 
       photo: user.photoURL, 
       role 
-    }));
+    };
 
+    localStorage.setItem("user", JSON.stringify(userData));
     console.log("User data saved to localStorage");
 
-    if (role === "user") {
-      window.location.href = "/student-dashboard";
-    } else {
-      window.location.href = "/driver-dashboard";
-    }
+    // Navigate to book ride page after successful login
+    window.location.href = "/book-ride";
   } catch (err: any) {
     console.error("Google Auth Error:", err);
     

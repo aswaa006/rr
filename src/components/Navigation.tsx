@@ -1,18 +1,20 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Menu } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Menu, LogOut } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import AuthModal from "./AuthModal";
 import UserAccountMenu from "./UserAccountMenu";
+import { useAuth } from "@/contexts/AuthContext";
+import { loginWithGoogle, logout } from "@/firebase";
 
 const Navigation = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [authModal, setAuthModal] = useState({ isOpen: false, userType: "student" as "student" | "hero" });
   const [mobileOpen, setMobileOpen] = useState(false);
   
-  // This will be replaced with actual auth state from Supabase
-  const [user, setUser] = useState<{ name: string; type: "student" | "hero" } | null>(null);
+  const { user, login, logout: authLogout } = useAuth();
 
   const navItems = [
     { path: "/", label: "Home" },
@@ -21,12 +23,28 @@ const Navigation = () => {
     { path: "/contact", label: "Contact" },
   ];
 
-  const handleAuthOpen = (userType: "student" | "hero") => {
-    setAuthModal({ isOpen: true, userType });
+  const handleBookRideClick = async () => {
+    if (!user) {
+      // User not logged in, show login modal
+      setAuthModal({ isOpen: true, userType: "student" });
+    } else {
+      // User is logged in, navigate to book ride
+      navigate("/book-ride");
+    }
   };
 
-  const handleLogout = () => {
-    setUser(null);
+  const handleGoogleLogin = async () => {
+    try {
+      await loginWithGoogle("user");
+      // The loginWithGoogle function will handle navigation
+    } catch (error) {
+      console.error("Login failed:", error);
+    }
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    authLogout();
   };
 
   return (
@@ -53,51 +71,34 @@ const Navigation = () => {
         </div>
 
         <div className="hidden md:flex items-center space-x-3">
-          <Link to="/book-ride">
-            <Button variant="hero" size="lg" className="text-sm font-semibold">
-              Book Ride Now
-            </Button>
-          </Link>
+          <Button 
+            variant="hero" 
+            size="lg" 
+            className="text-sm font-semibold"
+            onClick={handleBookRideClick}
+          >
+            Book Ride Now
+          </Button>
           <Link to="/become-hero">
             <Button variant="secondary" size="default" className="text-sm">
               Become a Hero
             </Button>
           </Link>
           
-          {user ? (
+          {user && (
             <>
-              {user.type === "hero" && (
-                <Link to="/driver-login">
-                  <Button variant="secondary" size="default" className="text-sm">
-                    Driver Dashboard
-                  </Button>
-                </Link>
-              )}
-              <UserAccountMenu 
-                userType={user.type} 
-                userName={user.name} 
-                onLogout={handleLogout}
-              />
-            </>
-          ) : (
-            <>
+              <span className="text-sm text-muted-foreground">
+                Welcome, {user.name?.split(' ')[0]}
+              </span>
               <Button 
-                variant="secondary" 
+                variant="outline" 
                 size="default" 
                 className="text-sm"
-                onClick={() => handleAuthOpen("student")}
+                onClick={handleLogout}
               >
-                Student Login
+                <LogOut className="w-4 h-4 mr-2" />
+                Sign Out
               </Button>
-              <Link to="/driver-login">
-                <Button 
-                  variant="outline" 
-                  size="default" 
-                  className="text-sm"
-                >
-                  Hero Login
-                </Button>
-              </Link>
             </>
           )}
         </div>
@@ -134,53 +135,34 @@ const Navigation = () => {
                 ))}
               </div>
               <div className="mt-6 grid grid-cols-1 gap-3">
-                <Link to="/book-ride" onClick={() => setMobileOpen(false)}>
-                  <Button variant="hero" size="lg" className="w-full">
-                    Book Ride Now
-                  </Button>
-                </Link>
+                <Button 
+                  variant="hero" 
+                  size="lg" 
+                  className="w-full"
+                  onClick={() => { setMobileOpen(false); handleBookRideClick(); }}
+                >
+                  Book Ride Now
+                </Button>
                 <Link to="/become-hero" onClick={() => setMobileOpen(false)}>
                   <Button variant="secondary" size="lg" className="w-full">
                     Become a Hero
                   </Button>
                 </Link>
-                {user ? (
-                  <>
-                    {user.type === "hero" && (
-                      <Link to="/driver-login" onClick={() => setMobileOpen(false)}>
-                        <Button variant="secondary" size="lg" className="w-full">
-                          Driver Dashboard
-                        </Button>
-                      </Link>
-                    )}
-                    <div className="pt-2">
-                      <UserAccountMenu 
-                        userType={user.type} 
-                        userName={user.name} 
-                        onLogout={() => { handleLogout(); setMobileOpen(false); }}
-                      />
-                    </div>
-                  </>
-                ) : (
-                  <>
+                {user && (
+                  <div className="pt-2 text-center">
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Welcome, {user.name?.split(' ')[0]}
+                    </p>
                     <Button 
-                      variant="secondary" 
+                      variant="outline" 
                       size="lg" 
                       className="w-full"
-                      onClick={() => { setMobileOpen(false); handleAuthOpen("student"); }}
+                      onClick={() => { setMobileOpen(false); handleLogout(); }}
                     >
-                      Student Login
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Sign Out
                     </Button>
-                    <Link to="/driver-login" onClick={() => setMobileOpen(false)}>
-                      <Button 
-                        variant="outline" 
-                        size="lg" 
-                        className="w-full"
-                      >
-                        Hero Login
-                      </Button>
-                    </Link>
-                  </>
+                  </div>
                 )}
               </div>
             </SheetContent>

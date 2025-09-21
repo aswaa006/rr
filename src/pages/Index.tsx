@@ -5,11 +5,28 @@ import Footer from "@/components/Footer";
 import AuthTest from "@/components/AuthTest";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { MapPin, Users, Wallet } from "lucide-react";
 import heroImage from "@/assets/hero-image.jpg";
+import { useAuth } from "@/contexts/AuthContext";
+import { useState } from "react";
+import AuthModal from "@/components/AuthModal";
 
 const Index = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [authModal, setAuthModal] = useState({ isOpen: false, userType: "student" as "student" | "hero" });
+
+  const handleBookRideClick = () => {
+    if (!user) {
+      // User not logged in, show login modal
+      setAuthModal({ isOpen: true, userType: "student" });
+    } else {
+      // User is logged in, navigate to book ride
+      navigate("/book-ride");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -29,11 +46,14 @@ const Index = () => {
                 Safe, affordable, and always available.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link to="/book-ride">
-                  <Button variant="hero" size="xl" className="w-full sm:w-auto">
-                    Book Ride Now
-                  </Button>
-                </Link>
+                <Button 
+                  variant="hero" 
+                  size="xl" 
+                  className="w-full sm:w-auto"
+                  onClick={handleBookRideClick}
+                >
+                  Book Ride Now!
+                </Button>
                 <Link to="/become-hero">
                   <Button variant="secondary" size="xl" className="w-full sm:w-auto">
                     Become a Hero
@@ -118,11 +138,14 @@ const Index = () => {
               Join thousands of students who trust Campus X for their daily commute
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/book-ride">
-                <Button variant="hero" size="xl" className="w-full sm:w-auto">
-                  Book Your First Ride
-                </Button>
-              </Link>
+              <Button 
+                variant="hero" 
+                size="xl" 
+                className="w-full sm:w-auto"
+                onClick={handleBookRideClick}
+              >
+                Book Your First Ride
+              </Button>
               <Link to="/become-hero">
                 <Button variant="secondary" size="xl" className="w-full sm:w-auto">
                   Become a Hero
@@ -142,6 +165,12 @@ const Index = () => {
       
       <SafetySection />
       <Footer />
+      
+      <AuthModal 
+        isOpen={authModal.isOpen}
+        onClose={() => setAuthModal({ ...authModal, isOpen: false })}
+        userType={authModal.userType}
+      />
     </div>
   );
 };
