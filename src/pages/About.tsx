@@ -1,0 +1,193 @@
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Navigation from "@/components/Navigation";
+import FloatingCTA from "@/components/FloatingCTA";
+import { Link } from "react-router-dom";
+import { Users, Target, Heart, Award } from "lucide-react";
+
+const About = () => {
+  return (
+    <div className="min-h-screen bg-background">
+      <Navigation />
+      <FloatingCTA />
+      
+      {/* Hero Section */}
+      <section className="py-16 sm:py-20 px-4 bg-gradient-to-br from-primary/10 to-secondary/10">
+        <div className="container mx-auto max-w-4xl text-center">
+          <div className="fade-in">
+            <h1 className="text-4xl sm:text-5xl font-bold mb-4 sm:mb-6">
+              About <span className="text-primary">Campus X</span>
+            </h1>
+            <p className="text-base sm:text-xl text-muted-foreground leading-relaxed">
+              A student-led initiative revolutionizing campus transportation through 
+              community, affordability, and trust.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Mission Section */}
+      <section className="py-12 sm:py-16 px-4">
+        <div className="container mx-auto max-w-6xl">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="slide-up">
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+                <Target className="w-8 h-8 text-primary" />
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Our Mission</h2>
+              <p className="text-base sm:text-lg text-muted-foreground leading-relaxed mb-6">
+                Campus X was born from a simple observation: students needed affordable, 
+                reliable transportation within campus. Traditional solutions were either 
+                too expensive or inconvenient.
+              </p>
+              <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
+                We bridge this gap by connecting students who need rides with fellow 
+                students who can provide them, creating a sustainable ecosystem that 
+                benefits everyone in our community.
+              </p>
+            </div>
+            
+            <Card className="slide-up shadow-lg">
+              <CardContent className="p-8">
+                <div className="text-center space-y-6">
+                  <div>
+                    <div className="text-4xl font-bold text-primary">₹30</div>
+                    <p className="text-muted-foreground">Fixed fare anywhere</p>
+                  </div>
+                  <div>
+                    <div className="text-4xl font-bold text-secondary">500+</div>
+                    <p className="text-muted-foreground">Happy riders</p>
+                  </div>
+                  <div>
+                    <div className="text-4xl font-bold text-success">100+</div>
+                    <p className="text-muted-foreground">Student Heroes</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Values Section */}
+      <section className="py-12 sm:py-16 px-4 bg-muted/30">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-12 fade-in">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-3 sm:mb-4">Our Values</h2>
+            <p className="text-base sm:text-xl text-muted-foreground">
+              The principles that drive everything we do
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            <Card className="slide-up border-2 hover:border-primary/50 transition-all duration-300">
+              <CardHeader className="text-center">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Users className="w-8 h-8 text-primary" />
+                </div>
+                <CardTitle className="text-xl">Community First</CardTitle>
+              </CardHeader>
+              <CardContent className="text-center">
+                <p className="text-muted-foreground leading-relaxed">
+                  We believe in the power of student community. Every ride strengthens 
+                  the bonds between fellow students and creates lasting friendships.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="slide-up border-2 hover:border-secondary/50 transition-all duration-300">
+              <CardHeader className="text-center">
+                <div className="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Heart className="w-8 h-8 text-secondary" />
+                </div>
+                <CardTitle className="text-xl">Trust & Safety</CardTitle>
+              </CardHeader>
+              <CardContent className="text-center">
+                <p className="text-muted-foreground leading-relaxed">
+                  Safety is non-negotiable. All our Heroes are verified students, 
+                  and every ride is tracked for complete peace of mind.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="slide-up border-2 hover:border-success/50 transition-all duration-300">
+              <CardHeader className="text-center">
+                <div className="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Award className="w-8 h-8 text-success" />
+                </div>
+                <CardTitle className="text-xl">Excellence</CardTitle>
+              </CardHeader>
+              <CardContent className="text-center">
+                <p className="text-muted-foreground leading-relaxed">
+                  We strive for excellence in every interaction. From our Heroes' 
+                  service to our platform's reliability, quality is our commitment.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Team Section */}
+      <section className="py-12 sm:py-16 px-4">
+        <div className="container mx-auto max-w-4xl">
+          <div className="text-center mb-12 fade-in">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-3 sm:mb-4">The Story Behind Campus X</h2>
+            <p className="text-base sm:text-xl text-muted-foreground">
+              Founded by students, for students
+            </p>
+          </div>
+          
+          <Card className="slide-up shadow-lg">
+            <CardContent className="p-6 sm:p-8">
+              <p className="text-base sm:text-lg text-muted-foreground leading-relaxed mb-6">
+                Campus X started when a group of computer science students realized 
+                that getting around campus was a daily struggle for many. Late for 
+                classes, missing important events, or simply tired from long walks 
+                between distant buildings.
+              </p>
+              <p className="text-base sm:text-lg text-muted-foreground leading-relaxed mb-6">
+                What began as a simple WhatsApp group for sharing rides quickly grew 
+                into something bigger. We saw the potential to create a platform that 
+                not only solved transportation problems but also built community and 
+                provided earning opportunities for student drivers.
+              </p>
+              <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
+                Today, Campus X is more than just a ride-sharing service. It's a 
+                testament to what students can achieve when they come together to 
+                solve real problems with innovative solutions.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-12 sm:py-16 px-4 bg-gradient-to-r from-primary/5 to-secondary/5">
+        <div className="container mx-auto max-w-4xl text-center">
+          <div className="fade-in">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4 sm:mb-6">Join Our Mission</h2>
+            <p className="text-base sm:text-xl text-muted-foreground mb-6 sm:mb-8">
+              Be part of the Campus X community and help us make campus transportation 
+              better for everyone
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link to="/book-ride">
+                <Button variant="hero" size="xl" className="w-full sm:w-auto">
+                  Start Riding
+                </Button>
+              </Link>
+              <Link to="/become-hero">
+                <Button variant="secondary" size="xl" className="w-full sm:w-auto">
+                  Become a Hero
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default About;

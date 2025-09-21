@@ -1,0 +1,141 @@
+import Navigation from "@/components/Navigation";
+import FloatingCTA from "@/components/FloatingCTA";
+import SafetySection from "@/components/SafetySection";
+import Footer from "@/components/Footer";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from "react-router-dom";
+import { MapPin, Users, Wallet } from "lucide-react";
+import heroImage from "@/assets/hero-image.jpg";
+
+const Index = () => {
+  return (
+    <div className="min-h-screen bg-background">
+      <Navigation />
+      <FloatingCTA />
+      
+      {/* Hero Section */}
+      <section className="relative py-16 sm:py-20 px-4 bg-gradient-to-br from-primary/10 to-secondary/10">
+        <div className="container mx-auto max-w-6xl">
+          <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 items-center">
+            <div className="fade-in">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-4 sm:mb-6">
+                Your Ride, Your Campus, Your Price – 
+                <span className="text-primary"> Just ₹30</span>
+              </h1>
+              <p className="text-base sm:text-xl text-muted-foreground mb-6 sm:mb-8 leading-relaxed">
+                Hop on with our Heroes and travel anywhere inside campus easily. 
+                Safe, affordable, and always available.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link to="/book-ride">
+                  <Button variant="hero" size="xl" className="w-full sm:w-auto">
+                    Book Ride Now
+                  </Button>
+                </Link>
+                <Link to="/become-hero">
+                  <Button variant="secondary" size="xl" className="w-full sm:w-auto">
+                    Become a Hero
+                  </Button>
+                </Link>
+              </div>
+            </div>
+            <div className="slide-up">
+              <img 
+                src={heroImage} 
+                alt="Campus bike taxi service with friendly student drivers"
+                className="rounded-2xl shadow-2xl w-full h-auto"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Feature Cards */}
+      <section className="py-16 sm:py-20 px-4">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-16 fade-in">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-3 sm:mb-4">Why Choose Campus X?</h2>
+            <p className="text-base sm:text-xl text-muted-foreground">Simple, safe, and student-friendly transportation</p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-6 sm:gap-8">
+            <Card className="slide-up border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-lg">
+              <CardHeader className="text-center pb-4">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Wallet className="w-8 h-8 text-primary" />
+                </div>
+                <CardTitle className="text-2xl">Affordable Rides</CardTitle>
+              </CardHeader>
+              <CardContent className="text-center">
+                <CardDescription className="text-base leading-relaxed">
+                  Fixed ₹30 fare anywhere inside campus. No surge pricing, no hidden costs. 
+                  Budget-friendly rides for every student.
+                </CardDescription>
+              </CardContent>
+            </Card>
+
+            <Card className="slide-up border-2 hover:border-secondary/50 transition-all duration-300 hover:shadow-lg">
+              <CardHeader className="text-center pb-4">
+                <div className="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Users className="w-8 h-8 text-secondary" />
+                </div>
+                <CardTitle className="text-2xl">Student Heroes</CardTitle>
+              </CardHeader>
+              <CardContent className="text-center">
+                <CardDescription className="text-base leading-relaxed">
+                  Friendly riders from your college community. Trusted, reliable, 
+                  and always ready to help fellow students.
+                </CardDescription>
+              </CardContent>
+            </Card>
+
+            <Card className="slide-up border-2 hover:border-success/50 transition-all duration-300 hover:shadow-lg">
+              <CardHeader className="text-center pb-4">
+                <div className="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <MapPin className="w-8 h-8 text-success" />
+                </div>
+                <CardTitle className="text-2xl">Pre-Book & Save</CardTitle>
+              </CardHeader>
+              <CardContent className="text-center">
+                <CardDescription className="text-base leading-relaxed">
+                  Book ahead and save ₹5 instantly. Plan your rides and 
+                  enjoy guaranteed availability at discounted rates.
+                </CardDescription>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-16 sm:py-20 px-4 bg-gradient-to-r from-primary/5 to-secondary/5">
+        <div className="container mx-auto max-w-4xl text-center">
+          <div className="fade-in">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4 sm:mb-6">Ready to Start Your Journey?</h2>
+            <p className="text-base sm:text-xl text-muted-foreground mb-6 sm:mb-8">
+              Join thousands of students who trust Campus X for their daily commute
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link to="/book-ride">
+                <Button variant="hero" size="xl" className="w-full sm:w-auto">
+                  Book Your First Ride
+                </Button>
+              </Link>
+              <Link to="/become-hero">
+                <Button variant="secondary" size="xl" className="w-full sm:w-auto">
+                  Become a Hero
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <SafetySection />
+      <Footer />
+    </div>
+  );
+};
+
+export default Index;

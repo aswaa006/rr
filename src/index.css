@@ -1,0 +1,154 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 210 24% 16%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 210 24% 16%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 24% 16%;
+
+    /* Campus X Brand Colors */
+    --primary: 45 100% 64%; /* Warm Yellow #FFD54F */
+    --primary-foreground: 210 24% 16%;
+
+    --secondary: 28 100% 53%; /* Orange #FF9800 */
+    --secondary-foreground: 0 0% 100%;
+
+    --hero: 45 100% 64%; /* Primary yellow for hero buttons */
+    --hero-foreground: 210 24% 16%;
+
+    --success: 142 69% 58%;
+    --success-foreground: 0 0% 100%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 45 100% 64%;
+    --accent-foreground: 210 24% 16%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 45 100% 64%;
+
+    --radius: 1rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 210 24% 16%;
+    --foreground: 0 0% 100%;
+
+    --card: 210 24% 16%;
+    --card-foreground: 0 0% 100%;
+
+    --popover: 210 24% 16%;
+    --popover-foreground: 0 0% 100%;
+
+    --primary: 45 100% 64%;
+    --primary-foreground: 210 24% 16%;
+
+    --secondary: 28 100% 53%;
+    --secondary-foreground: 0 0% 100%;
+
+    --hero: 45 100% 64%;
+    --hero-foreground: 210 24% 16%;
+
+    --success: 142 69% 58%;
+    --success-foreground: 0 0% 100%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 45 100% 64%;
+    --accent-foreground: 210 24% 16%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 45 100% 64%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .floating-cta {
+    @apply fixed bottom-6 right-6 z-50 animate-bounce;
+  }
+  
+  .fade-in {
+    @apply animate-[fadeIn_0.6s_ease-out];
+  }
+  
+  .slide-up {
+    @apply animate-[slideUp_0.8s_ease-out];
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
