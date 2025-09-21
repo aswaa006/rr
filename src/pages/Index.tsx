@@ -2,6 +2,7 @@ import Navigation from "@/components/Navigation";
 import FloatingCTA from "@/components/FloatingCTA";
 import SafetySection from "@/components/SafetySection";
 import Footer from "@/components/Footer";
+import AuthTest from "@/components/AuthTest";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "react-router-dom";
@@ -129,6 +130,13 @@ const Index = () => {
               </Link>
             </div>
           </div>
+        </div>
+      </section>
+      
+      {/* Debug Auth Test - Remove this after testing */}
+      <section className="py-8 px-4">
+        <div className="container mx-auto max-w-6xl">
+          <AuthTest />
         </div>
       </section>
       
