@@ -12,18 +12,7 @@ const AuthTest = () => {
     }
   };
 
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Auth Test Component</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Button onClick={testGoogleAuth}>
-          Test Google Auth
-        </Button>
-      </CardContent>
-    </Card>
-  );
+  
 };
 
 export default AuthTest;
