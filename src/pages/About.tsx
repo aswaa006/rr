@@ -4,13 +4,14 @@ import Navigation from "@/components/Navigation";
 import FloatingCTA from "@/components/FloatingCTA";
 import { Link } from "react-router-dom";
 import { Users, Target, Heart, Award } from "lucide-react";
+import Bike from "@/components/ui/bike";
 
 const About = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
       <FloatingCTA />
-      
+
       {/* Hero Section */}
       <section className="py-16 sm:py-20 px-4 bg-gradient-to-br from-primary/10 to-secondary/10">
         <div className="container mx-auto max-w-4xl text-center">
@@ -22,6 +23,10 @@ const About = () => {
               A student-led initiative revolutionizing campus transportation through 
               community, affordability, and trust.
             </p>
+          </div>
+          {/* Bike animation centered here */}
+          <div style={{ margin: "32px 0" }}>
+            <Bike />
           </div>
         </div>
       </section>
@@ -171,14 +176,15 @@ const About = () => {
               Be part of the Campus X community and help us make campus transportation 
               better for everyone
             </p>
+            {/* Fixed mobile responsive button styles here */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/book-ride">
-                <Button variant="hero" size="xl" className="w-full sm:w-auto">
+              <Link to="/book-ride" className="w-full sm:w-auto">
+                <Button variant="hero" size="xl" className="w-full">
                   Start Riding
                 </Button>
               </Link>
-              <Link to="/become-hero">
-                <Button variant="secondary" size="xl" className="w-full sm:w-auto">
+              <Link to="/become-hero" className="w-full sm:w-auto">
+                <Button variant="secondary" size="xl" className="w-full">
                   Become a Hero
                 </Button>
               </Link>

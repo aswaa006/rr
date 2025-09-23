@@ -11,6 +11,8 @@ import heroImage from "@/assets/hero-image.jpg";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState } from "react";
 import AuthModal from "@/components/AuthModal";
+import Bike from "@/components/ui/bike";
+
 
 const Index = () => {
   const { user } = useAuth();
@@ -157,11 +159,7 @@ const Index = () => {
       </section>
       
       {/* Debug Auth Test - Remove this after testing */}
-      <section className="py-8 px-4">
-        <div className="container mx-auto max-w-6xl">
-          <AuthTest />
-        </div>
-      </section>
+      
       
       <SafetySection />
       <Footer />

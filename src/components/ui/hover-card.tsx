@@ -11,16 +11,59 @@ const HoverCardContent = React.forwardRef<
   React.ElementRef<typeof HoverCardPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof HoverCardPrimitive.Content>
 >(({ className, align = "center", sideOffset = 4, ...props }, ref) => (
-  <HoverCardPrimitive.Content
-    ref={ref}
-    align={align}
-    sideOffset={sideOffset}
-    className={cn(
-      "z-50 w-64 rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-      className,
-    )}
-    {...props}
-  />
+  <>
+    <style>{`
+      @keyframes bloom-in {
+        0% {
+          opacity: 0;
+          transform: scale(0.95);
+          filter: drop-shadow(0 0 0 rgba(255, 215, 0, 0));
+          background-color: #fefcf9;
+        }
+        50% {
+          filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.4));
+          background-color: #fff8d6;
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1);
+          filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.2));
+          background-color: #fefcf9;
+        }
+      }
+      @keyframes bloom-out {
+        0% {
+          opacity: 1;
+          transform: scale(1);
+          filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.2));
+          background-color: #fefcf9;
+        }
+        100% {
+          opacity: 0;
+          transform: scale(0.95);
+          filter: drop-shadow(0 0 0 rgba(255, 215, 0, 0));
+          background-color: #fefcf9;
+        }
+      }
+      .animate-bloom-in {
+        animation: bloom-in 450ms ease forwards;
+      }
+      .animate-bloom-out {
+        animation: bloom-out 350ms ease forwards;
+      }
+    `}</style>
+    <HoverCardPrimitive.Content
+      ref={ref}
+      align={align}
+      sideOffset={sideOffset}
+      className={cn(
+        "z-50 w-64 rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-none",
+        "data-[state=open]:animate-bloom-in data-[state=closed]:animate-bloom-out",
+        className,
+      )}
+      {...props}
+    />
+  </>
 ));
 HoverCardContent.displayName = HoverCardPrimitive.Content.displayName;
 
