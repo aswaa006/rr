@@ -17,8 +17,8 @@ const HeroRegistration = () => {
     phone: "",
     vehicleType: "",
     vehicleNumber: "",
-    collegeId: "",
-    agreed: false
+    licenseFile: null as File | null,
+    agreed: false,
   });
   const [submitted, setSubmitted] = useState(false);
   const { toast } = useToast();
@@ -33,16 +33,21 @@ const HeroRegistration = () => {
       });
       return;
     }
-    
+
     setSubmitted(true);
     toast({
       title: "Application Submitted!",
       description: "We'll review your application and get back to you soon.",
     });
+
+    // You would typically send the formData including licenseFile here to a backend
   };
 
-  const handleInputChange = (field: string, value: string | boolean) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const handleInputChange = (
+    field: string,
+    value: string | boolean | File | null
+  ) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   if (submitted) {
@@ -50,15 +55,18 @@ const HeroRegistration = () => {
       <div className="min-h-screen bg-background">
         <Navigation />
         <FloatingCTA />
-        
+
         <div className="container mx-auto max-w-2xl px-4 py-8 sm:py-12">
           <div className="fade-in text-center">
             <div className="w-20 h-20 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-6">
               <Shield className="w-12 h-12 text-success" />
             </div>
-            <h1 className="text-3xl sm:text-4xl font-bold mb-3 sm:mb-4 text-success">Application Submitted!</h1>
+            <h1 className="text-3xl sm:text-4xl font-bold mb-3 sm:mb-4 text-success">
+              Application Submitted!
+            </h1>
             <p className="text-base sm:text-xl text-muted-foreground mb-6 sm:mb-8">
-              Thank you for your interest in becoming a Campus X Hero. We will review your application and contact you within 24-48 hours.
+              Thank you for your interest in becoming a Campus X Hero. We will
+              review your application and contact you within 24-48 hours.
             </p>
             <div className="bg-primary/5 border border-primary/20 rounded-lg p-6 mb-8">
               <h3 className="font-semibold mb-2">What's Next?</h3>
@@ -83,10 +91,12 @@ const HeroRegistration = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       <FloatingCTA />
-      
+
       <div className="container mx-auto max-w-2xl px-4 py-8 sm:py-12">
         <div className="fade-in text-center mb-6 sm:mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold mb-3 sm:mb-4">Become a Campus Hero</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold mb-3 sm:mb-4">
+            Become a Campus Hero
+          </h1>
           <p className="text-base sm:text-xl text-muted-foreground">
             Join our community of student drivers and start earning today
           </p>
@@ -159,17 +169,24 @@ const HeroRegistration = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="collegeId" className="flex items-center gap-2">
+                <Label htmlFor="licenseFile" className="flex items-center gap-2">
                   <Clock className="w-4 h-4" />
-                  College ID
+                  Driving License Photo
                 </Label>
                 <Input
-                  id="collegeId"
-                  value={formData.collegeId}
-                  onChange={(e) => handleInputChange("collegeId", e.target.value)}
-                  placeholder="Enter your College ID"
+                  id="licenseFile"
+                  type="file"
+                  accept="image/*,.pdf"
+                  onChange={(e) =>
+                    handleInputChange("licenseFile", e.target.files?.[0] ?? null)
+                  }
                   required
                 />
+                {formData.licenseFile && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {formData.licenseFile.name}
+                  </p>
+                )}
               </div>
 
               <div className="bg-muted/50 p-4 rounded-lg">
@@ -186,19 +203,28 @@ const HeroRegistration = () => {
                 <Checkbox
                   id="agree"
                   checked={formData.agreed}
-                  onCheckedChange={(checked) => handleInputChange("agreed", checked as boolean)}
+                  onCheckedChange={(checked) =>
+                    handleInputChange("agreed", checked as boolean)
+                  }
                 />
                 <Label htmlFor="agree" className="text-sm">
-                  I agree to the terms and conditions and commit to providing safe, reliable rides
+                  I agree to the terms and conditions and commit to providing safe,
+                  reliable rides
                 </Label>
               </div>
 
-              <Button 
-                type="submit" 
-                variant="hero" 
-                size="xl" 
+              <Button
+                type="submit"
+                variant="hero"
+                size="xl"
                 className="w-full"
-                disabled={!formData.name || !formData.phone || !formData.vehicleType || !formData.vehicleNumber || !formData.collegeId}
+                disabled={
+                  !formData.name ||
+                  !formData.phone ||
+                  !formData.vehicleType ||
+                  !formData.vehicleNumber ||
+                  !formData.licenseFile
+                }
               >
                 Submit Application
               </Button>
