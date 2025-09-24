@@ -46,7 +46,7 @@ const Navigation = () => {
 
   return (
     <>
-      {/* Animated Gradient + Glassmorphism CSS */}
+      {/* Animated Gradient + Glassmorphism CSS + Active Underline + Hover Bloom */}
       <style>{`
         @keyframes colorScroll {
           0% { background-position: 0% 50%; }
@@ -70,7 +70,7 @@ const Navigation = () => {
           margin-bottom: 24px;
           padding-left: 28px;
           padding-right: 28px;
-          max-width: 1420px;               /* Increased width for desktop */
+          max-width: 1420px;              /* Increased width for desktop */
           transition: box-shadow 0.3s;
           position: relative;
         }
@@ -92,7 +92,56 @@ const Navigation = () => {
           padding-top: 0;
           padding-bottom: 0;
         }
+
+        .navbar-btn-group {
+          position: relative;
+          display: flex;
+          align-items: center;
+        }
+        .navbar-btn {
+          position: relative;
+          background: transparent;
+          border: none;
+          outline: none;
+          transition: color 0.2s, transform 0.25s ease, box-shadow 0.25s ease;
+          cursor: pointer;
+          padding: 0.5rem 1.25rem;
+          border-radius: 9999px; /* fully rounded */
+          font-weight: 500;
+          user-select: none;
+        }
+        .navbar-btn.active::after {
+          content: "";
+          position: absolute;
+          left: 24px;
+          bottom: 8px;
+          width: calc(100% - 48px);
+          height: 3px;
+          background: linear-gradient(90deg, #ff9800, #fff, #ffe066);
+          box-shadow: 0 0 16px #ff9800a0;
+          opacity: 0.8;
+          border-radius: 2px;
+          animation: underline-animate 0.4s;
+          pointer-events: none;
+        }
+        .navbar-btn:hover {
+          transform: scale(1.15);
+          box-shadow: 0 0 12px #ff9800cc;
+          color: #ff6f00;
+          z-index: 10;
+        }
+        @keyframes underline-animate {
+          0% {
+            width: 0;
+            opacity: 0.1;
+          }
+          100% {
+            width: calc(100% - 48px);
+            opacity: 0.8;
+          }
+        }
       `}</style>
+
       <div className="glass-background w-full flex justify-center">
         <nav className="sticky top-0 z-40 w-full animated-navbar">
           <div className="h-20 flex items-center justify-between">
@@ -103,23 +152,25 @@ const Navigation = () => {
               <span className="font-bold text-2xl">Campus X</span>
             </Link>
 
-            <div className="hidden md:flex items-center space-x-2">
+            <div className="hidden md:flex items-center space-x-2 navbar-btn-group">
               {navItems.map((item) => (
-                <Link key={item.path} to={item.path}>
-                  <Button
-                    variant={location.pathname === item.path ? "default" : "ghost"}
-                    className="text-md px-5 py-2 rounded-full"
+                <Link key={item.path} to={item.path} tabIndex={-1}>
+                  <button
+                    className={`navbar-btn text-md ${
+                      location.pathname === item.path ? "active" : ""
+                    }`}
+                    type="button"
                   >
                     {item.label}
-                  </Button>
+                  </button>
                 </Link>
               ))}
             </div>
 
             <div className="hidden md:flex items-center space-x-4">
-              <Button 
-                variant="hero" 
-                size="lg" 
+              <Button
+                variant="hero"
+                size="lg"
                 className="text-md font-semibold px-6 py-2 rounded-full"
                 onClick={handleBookRideClick}
               >
@@ -132,12 +183,10 @@ const Navigation = () => {
               </Link>
               {user && (
                 <>
-                  <span className="text-md text-muted-foreground">
-                    Welcome, {user.name?.split(' ')[0]}
-                  </span>
-                  <Button 
-                    variant="outline" 
-                    size="default" 
+                  <span className="text-md text-muted-foreground">Welcome, {user.name?.split(" ")[0]}</span>
+                  <Button
+                    variant="outline"
+                    size="default"
                     className="text-md px-5 py-2 rounded-full"
                     onClick={handleLogout}
                   >
@@ -180,11 +229,14 @@ const Navigation = () => {
                     ))}
                   </div>
                   <div className="mt-6 grid grid-cols-1 gap-3">
-                    <Button 
-                      variant="hero" 
-                      size="lg" 
+                    <Button
+                      variant="hero"
+                      size="lg"
                       className="w-full"
-                      onClick={() => { setMobileOpen(false); handleBookRideClick(); }}
+                      onClick={() => {
+                        setMobileOpen(false);
+                        handleBookRideClick();
+                      }}
                     >
                       Book Ride Now
                     </Button>
@@ -195,14 +247,15 @@ const Navigation = () => {
                     </Link>
                     {user && (
                       <div className="pt-2 text-center">
-                        <p className="text-sm text-muted-foreground mb-2">
-                          Welcome, {user.name?.split(' ')[0]}
-                        </p>
-                        <Button 
-                          variant="outline" 
-                          size="lg" 
+                        <p className="text-sm text-muted-foreground mb-2">Welcome, {user.name?.split(" ")[0]}</p>
+                        <Button
+                          variant="outline"
+                          size="lg"
                           className="w-full"
-                          onClick={() => { setMobileOpen(false); handleLogout(); }}
+                          onClick={() => {
+                            setMobileOpen(false);
+                            handleLogout();
+                          }}
                         >
                           <LogOut className="w-4 h-4 mr-2" />
                           Sign Out
@@ -214,7 +267,7 @@ const Navigation = () => {
               </Sheet>
             </div>
           </div>
-          <AuthModal 
+          <AuthModal
             isOpen={authModal.isOpen}
             onClose={() => setAuthModal({ ...authModal, isOpen: false })}
             userType={authModal.userType}
