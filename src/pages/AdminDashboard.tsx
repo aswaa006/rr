@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,7 +9,6 @@ import { useAdminAuth } from "@/contexts/AdminAuthContext";
 import AdminLoginModal from "@/components/AdminLoginModal";
 import { Shield, CheckCircle2, XCircle } from "lucide-react";
 
-// Placeholder Firestore-like API. Replace with real Firebase when available.
 type HeroApplication = {
   id: string;
   name: string;
@@ -18,74 +17,74 @@ type HeroApplication = {
   vehicleNumber: string;
   licenseUrl: string;
   agreed: boolean;
-  submittedAt: number; // epoch ms
+  submittedAt: number;
   status?: "pending" | "approved" | "rejected";
 };
 
-// Simulated fetch/update for demo. Swap with Firebase Firestore SDK later.
-async function fetchHeroApplications(): Promise<HeroApplication[]> {
-  return [
-    {
-      id: "demo-1",
-      name: "John Doe",
-      phone: "+91 9876543210",
-      vehicleType: "Bike",
-      vehicleNumber: "HR-26-AX-1234",
-      licenseUrl: "https://example.com/license/demo1.jpg",
-      agreed: true,
-      submittedAt: Date.now() - 1000 * 60 * 60,
-      status: "pending"
-    }
-  ];
+// Fetch hero applications from backend API
+async function fetchHeroApplications(token: string): Promise<HeroApplication[]> {
+  const res = await fetch('/api/heroApplications', {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error('Failed to fetch applications');
+  return res.json();
 }
 
-async function updateApplicationStatus(_id: string, _status: "approved" | "rejected") {
-  // Replace with Firestore updateDoc call
+// Update application status via backend API
+async function updateApplicationStatus(token: string, id: string, status: "approved" | "rejected") {
+  const res = await fetch(`/api/heroApplications/${id}/status`, {
+    method: 'PATCH',
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({ status }),
+  });
+  if (!res.ok) throw new Error('Failed to update status');
   return true;
 }
 
 export default function AdminDashboard() {
-  const { isAuthenticated } = useAdminAuth();
+  const { isAuthenticated, token } = useAdminAuth();
   const [loginOpen, setLoginOpen] = useState(false);
-  const [buffer, setBuffer] = useState<string[]>([]);
+  const bufferRef = useRef<string[]>([]);
   const [secretUnlocked, setSecretUnlocked] = useState(false);
   const [loading, setLoading] = useState(false);
   const [apps, setApps] = useState<HeroApplication[]>([]);
 
-  // Secret sequence: press '8', then '7', then '6'
   useEffect(() => {
-    function onKeyDown(e: KeyboardEvent) {
+    const onKeyDown = (e: KeyboardEvent) => {
       const key = e.key;
-      const next = [...buffer, key].slice(-3);
-      setBuffer(next);
-      if (next.join("") === "876") {
+      bufferRef.current = [...bufferRef.current, key].slice(-5);
+      if (bufferRef.current.join("") === "11223") {
         setSecretUnlocked(true);
         setLoginOpen(true);
       }
-    }
+    };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [buffer]);
+  }, []);
 
   useEffect(() => {
     if (!isAuthenticated || !secretUnlocked) return;
     (async () => {
       setLoading(true);
       try {
-        const data = await fetchHeroApplications();
+        const data = await fetchHeroApplications(token!);
         setApps(data);
+      } catch {
+        setApps([]);
       } finally {
         setLoading(false);
       }
     })();
-  }, [isAuthenticated, secretUnlocked]);
+  }, [isAuthenticated, secretUnlocked, token]);
 
   const hasData = useMemo(() => apps.length > 0, [apps]);
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-
       <main className="container mx-auto px-4 py-8">
         {!secretUnlocked && (
           <Card className="max-w-2xl mx-auto">
@@ -98,7 +97,9 @@ export default function AdminDashboard() {
               <p className="text-muted-foreground">
                 This section is protected. Press the secret sequence to continue.
               </p>
-              <p className="text-sm text-muted-foreground mt-2">Hint: 3 digits ascending from 6 but typed in reverse.</p>
+              <p className="text-sm text-muted-foreground mt-2">
+                Hint: 3 digits ascending from 6 but typed in reverse.
+              </p>
             </CardContent>
           </Card>
         )}
@@ -160,9 +161,9 @@ export default function AdminDashboard() {
                             <Button
                               size="sm"
                               variant="secondary"
-                              onClick={async ()=>{
-                                await updateApplicationStatus(app.id, 'approved');
-                                setApps(prev => prev.map(a => a.id===app.id ? { ...a, status: 'approved' } : a));
+                              onClick={async () => {
+                                await updateApplicationStatus(token!, app.id, 'approved');
+                                setApps(prev => prev.map(a => a.id === app.id ? { ...a, status: 'approved' } : a));
                               }}
                             >
                               <CheckCircle2 className="w-4 h-4 mr-1" /> Approve
@@ -170,9 +171,9 @@ export default function AdminDashboard() {
                             <Button
                               size="sm"
                               variant="destructive"
-                              onClick={async ()=>{
-                                await updateApplicationStatus(app.id, 'rejected');
-                                setApps(prev => prev.map(a => a.id===app.id ? { ...a, status: 'rejected' } : a));
+                              onClick={async () => {
+                                await updateApplicationStatus(token!, app.id, 'rejected');
+                                setApps(prev => prev.map(a => a.id === app.id ? { ...a, status: 'rejected' } : a));
                               }}
                             >
                               <XCircle className="w-4 h-4 mr-1" /> Reject
@@ -188,12 +189,8 @@ export default function AdminDashboard() {
           </Card>
         )}
       </main>
-
       <Footer />
-
       <AdminLoginModal open={loginOpen} onOpenChange={setLoginOpen} />
     </div>
   );
 }
-
-
