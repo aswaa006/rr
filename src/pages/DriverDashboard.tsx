@@ -52,35 +52,35 @@ const DriverDashboard = () => {
       <Navigation />
       <FloatingCTA />
       
-      <div className="container mx-auto max-w-6xl px-4 py-8 sm:py-12">
+      <div className="container mx-auto max-w-6xl px-4 sm:px-6 py-6 sm:py-8 lg:py-12">
         {/* Welcome Section */}
-        <div className="fade-in text-center mb-10 sm:mb-12">
-          <div className="w-20 h-20 bg-gradient-to-br from-secondary to-primary rounded-full flex items-center justify-center mx-auto mb-6">
+        <div className="fade-in text-center mb-8 sm:mb-10 lg:mb-12">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-secondary to-primary rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
             {user.photo ? (
               <img 
                 src={user.photo} 
                 alt={user.name} 
-                className="w-16 h-16 rounded-full object-cover"
+                className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover"
               />
             ) : (
-              <User className="w-12 h-12 text-white" />
+              <User className="w-8 h-8 sm:w-12 sm:h-12 text-white" />
             )}
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold mb-3 sm:mb-4">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4">
             Welcome, Hero {user.name?.split(' ')[0]}!
           </h1>
-          <p className="text-base sm:text-xl text-muted-foreground">
+          <p className="text-sm sm:text-base lg:text-xl text-muted-foreground">
             Ready to help students get around campus?
           </p>
         </div>
 
         {/* Status Toggle */}
-        <Card className="slide-up mb-8">
-          <CardContent className="pt-6">
+        <Card className="slide-up mb-6 sm:mb-8">
+          <CardContent className="pt-4 sm:pt-6">
             <div className="text-center">
-              <div className="flex items-center justify-center gap-3 mb-4">
-                <div className={`w-3 h-3 rounded-full ${isOnline ? 'bg-green-500' : 'bg-gray-400'}`}></div>
-                <span className="font-medium">
+              <div className="flex items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+                <div className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full ${isOnline ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                <span className="font-medium text-sm sm:text-base">
                   {isOnline ? 'Online - Available for rides' : 'Offline - Not accepting rides'}
                 </span>
               </div>
@@ -88,7 +88,7 @@ const DriverDashboard = () => {
                 variant={isOnline ? "destructive" : "hero"}
                 size="lg"
                 onClick={toggleOnlineStatus}
-                className="w-full sm:w-auto"
+                className="w-full sm:w-auto text-sm sm:text-base"
               >
                 {isOnline ? 'Go Offline' : 'Go Online'}
               </Button>
@@ -97,26 +97,26 @@ const DriverDashboard = () => {
         </Card>
 
         {/* Stats Cards */}
-        <div className="grid md:grid-cols-3 gap-4 sm:gap-6 mb-8">
-          <Card className="text-center p-6 bg-primary/5">
-            <BarChart3 className="w-8 h-8 text-primary mx-auto mb-2" />
-            <h4 className="font-semibold">Total Rides</h4>
-            <p className="text-3xl font-bold">128</p>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+          <Card className="text-center p-4 sm:p-6 bg-primary/5">
+            <BarChart3 className="w-6 h-6 sm:w-8 sm:h-8 text-primary mx-auto mb-2" />
+            <h4 className="font-semibold text-sm sm:text-base">Total Rides</h4>
+            <p className="text-2xl sm:text-3xl font-bold">128</p>
           </Card>
-          <Card className="text-center p-6 bg-secondary/5">
-            <Wallet className="w-8 h-8 text-secondary mx-auto mb-2" />
-            <h4 className="font-semibold">Total Earnings</h4>
-            <p className="text-3xl font-bold">₹{128 * 30}</p>
+          <Card className="text-center p-4 sm:p-6 bg-secondary/5">
+            <Wallet className="w-6 h-6 sm:w-8 sm:h-8 text-secondary mx-auto mb-2" />
+            <h4 className="font-semibold text-sm sm:text-base">Total Earnings</h4>
+            <p className="text-2xl sm:text-3xl font-bold">₹{128 * 30}</p>
           </Card>
-          <Card className="text-center p-6 bg-success/5">
-            <Calendar className="w-8 h-8 text-success mx-auto mb-2" />
-            <h4 className="font-semibold">This Week</h4>
-            <p className="text-3xl font-bold">24 rides</p>
+          <Card className="text-center p-4 sm:p-6 bg-success/5 sm:col-span-2 lg:col-span-1">
+            <Calendar className="w-6 h-6 sm:w-8 sm:h-8 text-success mx-auto mb-2" />
+            <h4 className="font-semibold text-sm sm:text-base">This Week</h4>
+            <p className="text-2xl sm:text-3xl font-bold">24 rides</p>
           </Card>
         </div>
 
         {/* Recent Activity */}
-        <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 mb-8">
+        <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 mb-6 sm:mb-8">
           <Card className="slide-up">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">

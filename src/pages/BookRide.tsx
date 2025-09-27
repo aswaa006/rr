@@ -51,10 +51,10 @@ const BookRide = () => {
       <Navigation />
       <FloatingCTA />
       
-      <div className="container mx-auto max-w-2xl px-4 py-8 sm:py-12">
+      <div className="container mx-auto max-w-2xl px-4 py-6 sm:py-8 lg:py-12">
         <div className="fade-in text-center mb-6 sm:mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold mb-3 sm:mb-4">Book Your Ride</h1>
-          <p className="text-base sm:text-xl text-muted-foreground">Quick and easy campus transportation</p>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4">Book Your Ride</h1>
+          <p className="text-base sm:text-lg lg:text-xl text-muted-foreground">Quick and easy campus transportation</p>
         </div>
 
         <Card className="slide-up shadow-lg">
@@ -177,7 +177,7 @@ const BookRide = () => {
             <Button 
               variant="hero" 
               size="xl" 
-              className="w-full" 
+              className="w-full text-base sm:text-lg" 
               disabled={!canProceed}
               onClick={() => {
                 if (!canProceed) return;

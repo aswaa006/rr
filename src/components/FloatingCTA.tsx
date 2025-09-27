@@ -26,7 +26,7 @@ const FloatingCTA = () => {
 
   return (
     <>
-      <div className="floating-cta fixed bottom-14 right-14 z-50">
+      <div className="floating-cta fixed bottom-4 right-4 sm:bottom-8 sm:right-8 md:bottom-14 md:right-14 z-50">
         <Button
           variant="cta"
           size="xl"

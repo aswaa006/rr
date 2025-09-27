@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import AuthModal from "./AuthModal";
-import UserAccountMenu from "./UserAccountMenu";
 import { useAuth } from "@/contexts/AuthContext";
 import { loginWithGoogle, logout } from "@/firebase";
 
@@ -31,14 +30,6 @@ const Navigation = () => {
     }
   };
 
-  const handleGoogleLogin = async () => {
-    try {
-      await loginWithGoogle("user");
-    } catch (error) {
-      console.error("Login failed:", error);
-    }
-  };
-
   const handleLogout = async () => {
     await logout();
     authLogout();
@@ -46,7 +37,6 @@ const Navigation = () => {
 
   return (
     <>
-      {/* Animated Gradient + Glassmorphism CSS + Active Underline + Hover Bloom */}
       <style>{`
         @keyframes colorScroll {
           0% { background-position: 0% 50%; }
@@ -63,24 +53,35 @@ const Navigation = () => {
           );
           background-size: 200% 100%;
           animation: colorScroll 12s linear infinite;
-          min-height: 76px;                /* More breadth for desktop */
+          min-height: 76px;
           box-shadow: 0 8px 32px 0 rgba(31,38,135,0.14);
           border-radius: 20px;
           margin-top: 16px;
           margin-bottom: 24px;
           padding-left: 28px;
           padding-right: 28px;
-          max-width: 1420px;              /* Increased width for desktop */
+          max-width: 1420px;
           transition: box-shadow 0.3s;
           position: relative;
         }
-        @media (max-width: 900px) {
+        @media (max-width: 1024px) {
           .animated-navbar {
             border-radius: 12px;
-            margin: 0;
-            max-width: 100vw;
+            margin: 8px;
+            max-width: calc(100vw - 16px);
             padding-left: 16px;
             padding-right: 16px;
+            min-height: 64px;
+          }
+        }
+        @media (max-width: 640px) {
+          .animated-navbar {
+            border-radius: 8px;
+            margin: 4px;
+            max-width: calc(100vw - 8px);
+            padding-left: 12px;
+            padding-right: 12px;
+            min-height: 56px;
           }
         }
         .glass-background {
@@ -92,11 +93,11 @@ const Navigation = () => {
           padding-top: 0;
           padding-bottom: 0;
         }
-
         .navbar-btn-group {
           position: relative;
           display: flex;
           align-items: center;
+          justify-content: center;
         }
         .navbar-btn {
           position: relative;
@@ -106,7 +107,7 @@ const Navigation = () => {
           transition: color 0.2s, transform 0.25s ease, box-shadow 0.25s ease;
           cursor: pointer;
           padding: 0.5rem 1.25rem;
-          border-radius: 9999px; /* fully rounded */
+          border-radius: 9999px;
           font-weight: 500;
           user-select: none;
         }
@@ -140,19 +141,35 @@ const Navigation = () => {
             opacity: 0.8;
           }
         }
+        @media (max-width: 1023px) {
+          .navbar-btn-group {
+            display: none !important;
+          }
+          .desktop-actions {
+            display: none !important;
+          }
+        }
+        @media (min-width: 1024px) {
+          .mobile-logo-title {
+            display: none !important;
+          }
+        }
       `}</style>
-
       <div className="glass-background w-full flex justify-center">
         <nav className="sticky top-0 z-40 w-full animated-navbar">
-          <div className="h-20 flex items-center justify-between">
-            <Link to="/" className="flex items-center space-x-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-lg">X</span>
+          <div className="h-14 sm:h-20 grid grid-cols-12 items-center">
+            {/* Desktop logo + title (left) */}
+            <Link 
+              to="/" 
+              className="hidden lg:flex items-center space-x-2 col-span-2"
+            >
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
+                <span className="text-white font-bold text-sm sm:text-lg">X</span>
               </div>
-              <span className="font-bold text-2xl">Campus X</span>
+              <span className="font-bold text-lg sm:text-2xl">Campus X</span>
             </Link>
-
-            <div className="hidden md:flex items-center space-x-2 navbar-btn-group">
+            {/* Center nav buttons (desktop only) */}
+            <div className="navbar-btn-group col-span-6">
               {navItems.map((item) => (
                 <Link key={item.path} to={item.path} tabIndex={-1}>
                   <button
@@ -166,46 +183,79 @@ const Navigation = () => {
                 </Link>
               ))}
             </div>
-
-            <div className="hidden md:flex items-center space-x-4">
+            {/* Desktop right actions */}
+            <div className="desktop-actions hidden lg:flex items-center space-x-2 xl:space-x-4 col-span-4 justify-end">
               <Button
                 variant="hero"
                 size="lg"
-                className="text-md font-semibold px-6 py-2 rounded-full"
+                className="text-sm xl:text-md font-semibold px-4 xl:px-6 py-2 rounded-full"
                 onClick={handleBookRideClick}
               >
-                Book Ride Now
+                <span className="hidden xl:inline">Book Ride Now</span>
+                <span className="xl:hidden">Book Ride</span>
               </Button>
               <Link to="/become-hero">
-                <Button variant="secondary" size="default" className="text-md px-5 py-2 rounded-full">
-                  Become a Hero
+                <Button variant="secondary" size="default" className="text-sm xl:text-md px-3 xl:px-5 py-2 rounded-full">
+                  <span className="hidden xl:inline">Become a Hero</span>
+                  <span className="xl:hidden">Become Hero</span>
                 </Button>
               </Link>
               {user && (
                 <>
-                  <span className="text-md text-muted-foreground">Welcome, {user.name?.split(" ")[0]}</span>
+                  <span className="text-sm xl:text-md text-muted-foreground hidden xl:inline">Welcome, {user.name?.split(" ")[0]}</span>
                   <Button
                     variant="outline"
                     size="default"
-                    className="text-md px-5 py-2 rounded-full"
+                    className="text-sm xl:text-md px-3 xl:px-5 py-2 rounded-full"
                     onClick={handleLogout}
                   >
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Sign Out
+                    <LogOut className="w-4 h-4 xl:mr-2" />
+                    <span className="hidden xl:inline">Sign Out</span>
                   </Button>
                 </>
               )}
             </div>
 
-            {/* Mobile Menu */}
-            <div className="md:hidden">
+            {/* Mobile: logo+title centered, hamburger right */}
+            <div className="mobile-logo-title lg:hidden col-span-8 flex items-center justify-center">
+              <Link to="/" className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">X</span>
+                </div>
+                <span className="font-bold text-xl">Campus X</span>
+              </Link>
+            </div>
+            <div className="lg:hidden col-span-4 flex justify-end">
               <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon" aria-label="Open menu">
-                    <Menu className="h-5 w-5" />
-                  </Button>
+                  <button
+                    type="button"
+                    aria-label="Open main menu"
+                    aria-haspopup="true"
+                    aria-controls="mobile-menu"
+                    aria-expanded={mobileOpen}
+                    onClick={() => setMobileOpen((v) => !v)}
+                    className="relative h-10 w-10 inline-flex items-center justify-center rounded-md transition focus:outline-none focus:ring-2 focus:ring-ring"
+                  >
+                    <span className="sr-only">Toggle menu</span>
+                    <span
+                      className={`block absolute h-[2px] w-6 bg-foreground transition-transform duration-300 ease-in-out ${
+                        mobileOpen ? "translate-y-0 rotate-45" : "-translate-y-2"
+                      }`}
+                    />
+                    <span
+                      className={`block absolute h-[2px] w-6 bg-foreground transition-all duration-300 ease-in-out ${
+                        mobileOpen ? "opacity-0" : "opacity-100"
+                      }`}
+                    />
+                    <span
+                      className={`block absolute h-[2px] w-6 bg-foreground transition-transform duration-300 ease-in-out ${
+                        mobileOpen ? "translate-y-0 -rotate-45" : "translate-y-2"
+                      }`}
+                    />
+                  </button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-[85%] sm:w-[400px]">
+                <SheetContent side="right" className="w-[90%] sm:w-[400px] max-w-[400px]" id="mobile-menu">
                   <SheetHeader>
                     <SheetTitle>
                       <Link to="/" onClick={() => setMobileOpen(false)} className="flex items-center space-x-2">
