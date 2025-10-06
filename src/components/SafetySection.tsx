@@ -30,7 +30,7 @@ const SafetySection = () => {
         <div className="text-center mb-12 fade-in">
           <h2 className="text-3xl font-bold mb-4">Your Safety is Our Priority</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            We've built Campus X with safety and trust at the core. Here's how we ensure every ride is secure.
+            We've built PUGO with safety and trust at the core. Here's how we ensure every ride is secure.
           </p>
         </div>
         
@@ -55,7 +55,7 @@ const SafetySection = () => {
         <div className="text-center mt-12">
           <div className="bg-hero/5 border border-hero/20 rounded-lg p-6 max-w-2xl mx-auto">
             <p className="text-muted-foreground">
-              <strong className="text-foreground">Campus X Promise:</strong> We're committed to making campus transportation 
+              <strong className="text-foreground">PUGO Promise:</strong> We're committed to making campus transportation 
               safer, more reliable, and more affordable for every student.
             </p>
           </div>

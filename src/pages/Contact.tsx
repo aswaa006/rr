@@ -64,7 +64,7 @@ const Contact = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="font-semibold mb-2">Campus X Headquarters</p>
+                <p className="font-semibold mb-2">PUGO Headquarters</p>
                 <p className="text-muted-foreground mb-3">
                   Student Activity Center<br />
                   Room 201, Second Floor<br />
@@ -94,7 +94,7 @@ const Contact = () => {
                   {/* Embed your map location URL below in the iframe src */}
                   <div className="mt-6 mx-auto max-w-full h-64 rounded-lg overflow-hidden border border-primary/30">
                     <iframe
-                      title="Campus X Map"
+                      title="PUGO Map"
                       src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3890.136478182118!2d80.01357431485576!3d13.028270808301927!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a528b827687f127%3A0xca9d2e9fba575931!2sSaveetha%20University!5e0!3m2!1sen!2sin!4v1695555432100"
                       width="100%"
                       height="100%"

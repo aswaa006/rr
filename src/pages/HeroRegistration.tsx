@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,7 +9,8 @@ import Navigation from "@/components/Navigation";
 import FloatingCTA from "@/components/FloatingCTA";
 import Footer from "@/components/Footer";
 import { useToast } from "@/hooks/use-toast";
-import { User, Phone, Car, Clock, Shield } from "lucide-react";
+import { User, Phone, Car, Clock, Shield, Loader2 } from "lucide-react";
+import { submitDriverRegistration, DriverRegistrationData, initializeStorage } from "@/services/supabaseService";
 
 const HeroRegistration = () => {
   const [formData, setFormData] = useState({
@@ -21,10 +22,69 @@ const HeroRegistration = () => {
     agreed: false,
   });
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [storageInitialized, setStorageInitialized] = useState(false);
+  const [storageError, setStorageError] = useState<string | null>(null);
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Initialize storage on component mount
+  useEffect(() => {
+    const initStorage = async (retryCount = 0) => {
+      try {
+        console.log(`Starting storage initialization (attempt ${retryCount + 1})...`);
+        setStorageError(null);
+        
+        const success = await initializeStorage();
+        setStorageInitialized(success);
+        
+        if (!success) {
+          console.error("Storage initialization failed");
+          setStorageError("Failed to initialize file storage");
+          
+          // Retry up to 3 times
+          if (retryCount < 2) {
+            console.log(`Retrying storage initialization in 2 seconds... (${retryCount + 1}/3)`);
+            setTimeout(() => initStorage(retryCount + 1), 2000);
+            return;
+          }
+          
+          toast({
+            title: "Storage Error",
+            description: "Failed to initialize file storage after multiple attempts. Please check the console for details and refresh the page.",
+            variant: "destructive",
+          });
+        } else {
+          console.log("Storage initialized successfully");
+          setStorageError(null);
+        }
+      } catch (error) {
+        console.error("Storage initialization error:", error);
+        setStorageInitialized(false);
+        setStorageError("An unexpected error occurred during storage initialization");
+        
+        // Retry on error too
+        if (retryCount < 2) {
+          console.log(`Retrying storage initialization after error in 2 seconds... (${retryCount + 1}/3)`);
+          setTimeout(() => initStorage(retryCount + 1), 2000);
+          return;
+        }
+        
+        toast({
+          title: "Storage Error",
+          description: "An unexpected error occurred during storage initialization. Please refresh the page.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    // Add a small delay to ensure Supabase is fully loaded
+    const timer = setTimeout(() => initStorage(0), 1000);
+    return () => clearTimeout(timer);
+  }, [toast]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (!formData.agreed) {
       toast({
         title: "Agreement Required",
@@ -34,13 +94,34 @@ const HeroRegistration = () => {
       return;
     }
 
-    setSubmitted(true);
-    toast({
-      title: "Application Submitted!",
-      description: "We'll review your application and get back to you soon.",
-    });
+    setIsSubmitting(true);
 
-    // You would typically send the formData including licenseFile here to a backend
+    try {
+      const result = await submitDriverRegistration(formData as DriverRegistrationData);
+      
+      if (result.success) {
+        setSubmitted(true);
+        toast({
+          title: "Application Submitted!",
+          description: "We'll review your application and get back to you soon.",
+        });
+      } else {
+        toast({
+          title: "Submission Failed",
+          description: result.error || "Please try again later.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+      toast({
+        title: "Submission Failed",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleInputChange = (
@@ -65,7 +146,7 @@ const HeroRegistration = () => {
               Application Submitted!
             </h1>
             <p className="text-base sm:text-xl text-muted-foreground mb-6 sm:mb-8">
-              Thank you for your interest in becoming a Campus X Hero. We will
+              Thank you for your interest in becoming a PUGO Hero. We will
               review your application and contact you within 24-48 hours.
             </p>
             <div className="bg-primary/5 border border-primary/20 rounded-lg p-6 mb-8">
@@ -213,6 +294,32 @@ const HeroRegistration = () => {
                 </Label>
               </div>
 
+              {storageError && !storageInitialized && (
+                <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 mb-4">
+                  <p className="text-destructive text-sm mb-2">{storageError}</p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setStorageError(null);
+                      setStorageInitialized(false);
+                      // Retry initialization
+                      setTimeout(() => {
+                        initializeStorage().then(success => {
+                          setStorageInitialized(success);
+                          if (!success) {
+                            setStorageError("Retry failed. Please refresh the page.");
+                          }
+                        });
+                      }, 500);
+                    }}
+                    className="text-destructive border-destructive hover:bg-destructive hover:text-white"
+                  >
+                    Retry Storage Initialization
+                  </Button>
+                </div>
+              )}
+
               <Button
                 type="submit"
                 variant="hero"
@@ -223,15 +330,26 @@ const HeroRegistration = () => {
                   !formData.phone ||
                   !formData.vehicleType ||
                   !formData.vehicleNumber ||
-                  !formData.licenseFile
+                  !formData.licenseFile ||
+                  isSubmitting ||
+                  !storageInitialized
                 }
               >
-                Submit Application
+                {!storageInitialized ? (
+                  storageError ? "Storage Error - Click Retry Above" : "Initializing Storage..."
+                ) : isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  "Submit Application"
+                )}
               </Button>
             </form>
           </CardContent>
         </Card>
-      </div>
+      </div> 
       <Footer />
     </div>
   );

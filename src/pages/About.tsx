@@ -17,7 +17,7 @@ const About = () => {
         <div className="container mx-auto max-w-4xl text-center">
           <div className="fade-in">
             <h1 className="text-4xl sm:text-5xl font-bold mb-4 sm:mb-6">
-              About <span className="text-primary">Campus X</span>
+              About <span className="text-primary">PUGO</span>
             </h1>
             <p className="text-base sm:text-xl text-muted-foreground leading-relaxed">
               A student-led initiative revolutionizing campus transportation through 
@@ -41,7 +41,7 @@ const About = () => {
               </div>
               <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Our Mission</h2>
               <p className="text-base sm:text-lg text-muted-foreground leading-relaxed mb-6">
-                Campus X was born from a simple observation: students needed affordable, 
+                PUGO was born from a simple observation: students needed affordable, 
                 reliable transportation within campus. Traditional solutions were either 
                 too expensive or inconvenient.
               </p>
@@ -137,7 +137,7 @@ const About = () => {
       <section className="py-12 sm:py-16 px-4">
         <div className="container mx-auto max-w-4xl">
           <div className="text-center mb-12 fade-in">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-3 sm:mb-4">The Story Behind Campus X</h2>
+            <h2 className="text-3xl sm:text-4xl font-bold mb-3 sm:mb-4">The Story Behind PUGO</h2>
             <p className="text-base sm:text-xl text-muted-foreground">
               Founded by students, for students
             </p>
@@ -146,7 +146,7 @@ const About = () => {
           <Card className="slide-up shadow-lg">
             <CardContent className="p-6 sm:p-8">
               <p className="text-base sm:text-lg text-muted-foreground leading-relaxed mb-6">
-                Campus X started when a group of computer science students realized 
+                PUGO started when a group of computer science students realized 
                 that getting around campus was a daily struggle for many. Late for 
                 classes, missing important events, or simply tired from long walks 
                 between distant buildings.
@@ -158,7 +158,7 @@ const About = () => {
                 provided earning opportunities for student drivers.
               </p>
               <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
-                Today, Campus X is more than just a ride-sharing service. It's a 
+                Today, PUGO is more than just a ride-sharing service. It's a 
                 testament to what students can achieve when they come together to 
                 solve real problems with innovative solutions.
               </p>
@@ -173,7 +173,7 @@ const About = () => {
           <div className="fade-in">
             <h2 className="text-3xl sm:text-4xl font-bold mb-4 sm:mb-6">Join Our Mission</h2>
             <p className="text-base sm:text-xl text-muted-foreground mb-6 sm:mb-8">
-              Be part of the Campus X community and help us make campus transportation 
+              Be part of the PUGO community and help us make campus transportation 
               better for everyone
             </p>
             {/* Fixed mobile responsive button styles here */}

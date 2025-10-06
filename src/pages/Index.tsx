@@ -44,7 +44,7 @@ const Index = () => {
                 <span className="text-primary block sm:inline"> Just ₹30</span>
               </h1>
               <p className="text-base sm:text-lg lg:text-xl text-muted-foreground mb-6 sm:mb-8 leading-relaxed">
-                Hop on with our Heroes and travel anywhere inside campus easily. 
+                Hop in with our Heroes and travel anywhere inside campus easily. 
                 Safe, affordable, and always available.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
@@ -78,7 +78,7 @@ const Index = () => {
       <section className="py-12 sm:py-16 lg:py-20 px-4">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-12 sm:mb-16 fade-in">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4">Why Choose Campus X?</h2>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4">Why Choose PUGO?</h2>
             <p className="text-base sm:text-lg lg:text-xl text-muted-foreground">Simple, safe, and student-friendly transportation</p>
           </div>
           
@@ -137,7 +137,7 @@ const Index = () => {
           <div className="fade-in">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6">Ready to Start Your Journey?</h2>
             <p className="text-base sm:text-lg lg:text-xl text-muted-foreground mb-6 sm:mb-8">
-              Join thousands of students who trust Campus X for their daily commute
+              Join thousands of students who trust PUGO for their daily commute
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
               <Button 

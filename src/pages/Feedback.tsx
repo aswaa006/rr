@@ -8,6 +8,7 @@ import Navigation from "@/components/Navigation";
 import FloatingCTA from "@/components/FloatingCTA";
 import { useToast } from "@/hooks/use-toast";
 import { MessageSquare, Star, ThumbsUp } from "lucide-react";
+import { submitFeedback } from "@/services/supabaseService";
 
 const Feedback = () => {
   const [formData, setFormData] = useState({
@@ -17,9 +18,10 @@ const Feedback = () => {
     message: ""
   });
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.rating === 0) {
       toast({
@@ -30,11 +32,44 @@ const Feedback = () => {
       return;
     }
     
-    setSubmitted(true);
-    toast({
-      title: "Feedback Submitted!",
-      description: "Thank you for helping us improve Campus X.",
-    });
+    setIsSubmitting(true);
+    
+    try {
+      // Get current user ID from localStorage or auth
+      const userData = localStorage.getItem("user");
+      const userId = userData ? JSON.parse(userData).id : null;
+      
+      const result = await submitFeedback({
+        userId: userId || 'anonymous',
+        name: formData.name,
+        email: formData.email,
+        rating: formData.rating,
+        message: formData.message
+      });
+      
+      if (result.success) {
+        setSubmitted(true);
+        toast({
+          title: "Feedback Submitted!",
+          description: "Thank you for helping us improve PUGO.",
+        });
+      } else {
+        toast({
+          title: "Submission Failed",
+          description: result.error || "Please try again later.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Feedback submission error:", error);
+      toast({
+        title: "Submission Failed",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleInputChange = (field: string, value: string | number) => {
@@ -74,7 +109,7 @@ const Feedback = () => {
             <h1 className="text-4xl font-bold mb-4 text-success">Thank You!</h1>
             <p className="text-xl text-muted-foreground mb-8">
               Your feedback has been submitted successfully. We appreciate you taking 
-              the time to help us improve Campus X.
+              the time to help us improve PUGO.
             </p>
             <div className="bg-primary/5 border border-primary/20 rounded-lg p-6 mb-8">
               <h3 className="font-semibold mb-2">Your Feedback Summary</h3>
@@ -102,7 +137,7 @@ const Feedback = () => {
         <div className="fade-in text-center mb-8">
           <h1 className="text-4xl font-bold mb-4">Share Your Feedback</h1>
           <p className="text-xl text-muted-foreground">
-            Help us improve your Campus X experience
+            Help us improve your PUGO experience
           </p>
         </div>
 
@@ -155,7 +190,7 @@ const Feedback = () => {
                   id="message"
                   value={formData.message}
                   onChange={(e) => handleInputChange("message", e.target.value)}
-                  placeholder="Tell us about your experience with Campus X. What did you like? What can we improve?"
+                  placeholder="Tell us about your experience with PUGO. What did you like? What can we improve?"
                   rows={5}
                   required
                 />
@@ -176,9 +211,9 @@ const Feedback = () => {
                 variant="hero" 
                 size="xl" 
                 className="w-full"
-                disabled={!formData.name || !formData.email || !formData.message}
+                disabled={!formData.name || !formData.email || !formData.message || isSubmitting}
               >
-                Submit Feedback
+                {isSubmitting ? "Submitting..." : "Submit Feedback"}
               </Button>
             </form>
           </CardContent>

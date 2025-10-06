@@ -47,8 +47,8 @@ const AuthModal = ({ isOpen, onClose, userType }: AuthModalProps) => {
     toast({
       title: isLogin ? "Login Successful!" : "Account Created!",
       description: isLogin 
-        ? `Welcome back to Campus X!` 
-        : `Welcome to Campus X! Please verify your email.`,
+        ? `Welcome back to PUGO!` 
+        : `Welcome to PUGO! Please verify your email.`,
     });
     
     // Reset form and close modal

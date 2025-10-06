@@ -34,7 +34,7 @@ const Footer = () => {
               <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
                 <span className="text-white font-bold text-sm sm:text-lg">X</span>
               </div>
-              <span className="font-bold text-lg sm:text-xl">Campus X</span>
+              <span className="font-bold text-lg sm:text-xl">PUGO</span>
             </Link>
             <p className="text-muted-foreground mb-4 sm:mb-6 max-w-md text-sm sm:text-base">
               Your trusted campus transportation solution. Safe, affordable, and reliable rides 

@@ -166,7 +166,7 @@ const Navigation = () => {
               <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
                 <span className="text-white font-bold text-sm sm:text-lg">X</span>
               </div>
-              <span className="font-bold text-lg sm:text-2xl">Campus X</span>
+              <span className="font-bold text-lg sm:text-2xl">PUGO</span>
             </Link>
             {/* Center nav buttons (desktop only) */}
             <div className="navbar-btn-group col-span-6">
@@ -222,7 +222,7 @@ const Navigation = () => {
                 <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
                   <span className="text-white font-bold text-lg">X</span>
                 </div>
-                <span className="font-bold text-xl">Campus X</span>
+                <span className="font-bold text-xl">PUGO</span>
               </Link>
             </div>
             <div className="lg:hidden col-span-4 flex justify-end">
@@ -262,7 +262,7 @@ const Navigation = () => {
                         <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
                           <span className="text-white font-bold text-lg">X</span>
                         </div>
-                        <span className="font-bold text-xl">Campus X</span>
+                        <span className="font-bold text-xl">PUGO</span>
                       </Link>
                     </SheetTitle>
                   </SheetHeader>

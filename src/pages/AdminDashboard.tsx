@@ -21,27 +21,27 @@ type HeroApplication = {
   status?: "pending" | "approved" | "rejected";
 };
 
-// Fetch hero applications from backend API
-async function fetchHeroApplications(token: string): Promise<HeroApplication[]> {
-  const res = await fetch('/api/heroApplications', {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  if (!res.ok) throw new Error('Failed to fetch applications');
-  return res.json();
+import { getAllDriverApplications, updateDriverApplicationStatus } from '@/services/supabaseService';
+
+// Fetch hero applications from Supabase
+async function fetchHeroApplications(): Promise<HeroApplication[]> {
+  const applications = await getAllDriverApplications();
+  return applications.map(app => ({
+    id: app.id || '',
+    name: app.name,
+    phone: app.phone,
+    vehicleType: app.vehicle_type,
+    vehicleNumber: app.vehicle_number,
+    licenseUrl: app.license_file_url || '',
+    agreed: app.agreed,
+    submittedAt: new Date(app.submitted_at).getTime(),
+    status: app.status
+  }));
 }
 
-// Update application status via backend API
-async function updateApplicationStatus(token: string, id: string, status: "approved" | "rejected") {
-  const res = await fetch(`/api/heroApplications/${id}/status`, {
-    method: 'PATCH',
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
-    },
-    body: JSON.stringify({ status }),
-  });
-  if (!res.ok) throw new Error('Failed to update status');
-  return true;
+// Update application status via Supabase
+async function updateApplicationStatus(id: string, status: "approved" | "rejected") {
+  return await updateDriverApplicationStatus(id, status);
 }
 
 export default function AdminDashboard() {
@@ -66,11 +66,11 @@ export default function AdminDashboard() {
   }, []);
 
   useEffect(() => {
-    if (!isAuthenticated || !secretUnlocked) return;
+    if (!secretUnlocked) return;
     (async () => {
       setLoading(true);
       try {
-        const data = await fetchHeroApplications(token!);
+        const data = await fetchHeroApplications();
         setApps(data);
       } catch {
         setApps([]);
@@ -78,7 +78,7 @@ export default function AdminDashboard() {
         setLoading(false);
       }
     })();
-  }, [isAuthenticated, secretUnlocked, token]);
+  }, [secretUnlocked]);
 
   const hasData = useMemo(() => apps.length > 0, [apps]);
 
@@ -162,7 +162,7 @@ export default function AdminDashboard() {
                               size="sm"
                               variant="secondary"
                               onClick={async () => {
-                                await updateApplicationStatus(token!, app.id, 'approved');
+                                await updateApplicationStatus(app.id, 'approved');
                                 setApps(prev => prev.map(a => a.id === app.id ? { ...a, status: 'approved' } : a));
                               }}
                             >
@@ -172,7 +172,7 @@ export default function AdminDashboard() {
                               size="sm"
                               variant="destructive"
                               onClick={async () => {
-                                await updateApplicationStatus(token!, app.id, 'rejected');
+                                await updateApplicationStatus(app.id, 'rejected');
                                 setApps(prev => prev.map(a => a.id === app.id ? { ...a, status: 'rejected' } : a));
                               }}
                             >
