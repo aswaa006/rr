@@ -5,6 +5,20 @@ type AdminUser = {
   username: string;
 };
 
+// Utility function for safe JSON parsing
+const safeJsonParse = <T>(jsonString: string | null, fallback: T): T => {
+  if (!jsonString || jsonString === 'null' || jsonString === 'undefined') {
+    return fallback;
+  }
+  
+  try {
+    return JSON.parse(jsonString);
+  } catch (error) {
+    console.error("JSON parsing failed:", error);
+    return fallback;
+  }
+};
+
 type AdminAuthContextValue = {
   token: string | null;
   admin: AdminUser | null;
@@ -22,8 +36,17 @@ export const AdminAuthProvider = ({ children }: { children: React.ReactNode }) =
   useEffect(() => {
     const storedToken = localStorage.getItem("adminToken");
     const storedUser = localStorage.getItem("adminUser");
+    
     if (storedToken) setToken(storedToken);
-    if (storedUser) setAdmin(JSON.parse(storedUser));
+    
+    // Use safe JSON parsing with null fallback
+    const parsedUser = safeJsonParse<AdminUser | null>(storedUser, null);
+    if (parsedUser) {
+      setAdmin(parsedUser);
+    } else if (storedUser) {
+      // If we had stored data but parsing failed, clear it
+      localStorage.removeItem("adminUser");
+    }
   }, []);
 
   const value = useMemo<AdminAuthContextValue>(() => ({

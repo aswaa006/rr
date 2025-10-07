@@ -23,7 +23,7 @@ type HeroApplication = {
 
 import { getAllDriverApplications, updateDriverApplicationStatus } from '@/services/supabaseService';
 
-// Fetch hero applications from Supabase
+// Fetch hero applications from Supabase - called only after login + secret unlocked
 async function fetchHeroApplications(): Promise<HeroApplication[]> {
   const applications = await getAllDriverApplications();
   return applications.map(app => ({
@@ -65,8 +65,9 @@ export default function AdminDashboard() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
 
+  // Critical fix: fetch only when secret unlocked AND admin is authenticated
   useEffect(() => {
-    if (!secretUnlocked) return;
+    if (!secretUnlocked || !isAuthenticated) return;
     (async () => {
       setLoading(true);
       try {
@@ -78,7 +79,7 @@ export default function AdminDashboard() {
         setLoading(false);
       }
     })();
-  }, [secretUnlocked]);
+  }, [secretUnlocked, isAuthenticated]);
 
   const hasData = useMemo(() => apps.length > 0, [apps]);
 

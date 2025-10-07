@@ -25,11 +25,13 @@ const UserAccountMenu = ({ userType, userName, onLogout }: UserAccountMenuProps)
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-          <Avatar className="h-10 w-10">
-            <AvatarFallback className="bg-primary text-primary-foreground">
-              {getInitials(userName)}
-            </AvatarFallback>
-          </Avatar>
+          <>
+            <Avatar className="h-10 w-10">
+              <AvatarFallback className="bg-primary text-primary-foreground">
+                {getInitials(userName)}
+              </AvatarFallback>
+            </Avatar>
+          </>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>

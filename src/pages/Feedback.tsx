@@ -37,7 +37,15 @@ const Feedback = () => {
     try {
       // Get current user ID from localStorage or auth
       const userData = localStorage.getItem("user");
-      const userId = userData ? JSON.parse(userData).id : null;
+      let userId = null;
+      if (userData) {
+        try {
+          userId = JSON.parse(userData).id;
+        } catch (error) {
+          console.error("Error parsing user data:", error);
+          localStorage.removeItem("user");
+        }
+      }
       
       const result = await submitFeedback({
         userId: userId || 'anonymous',

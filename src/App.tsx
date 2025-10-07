@@ -14,6 +14,7 @@ import About from "./pages/About";
 import Feedback from "./pages/Feedback";
 import Contact from "./pages/Contact";
 import DriverLogin from "./pages/DriverLogin";
+import HeroLogin from "./pages/HeroLogin";
 import StudentDashboard from "./pages/StudentDashboard";
 import DriverDashboard from "./pages/DriverDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
@@ -39,6 +40,7 @@ const App = () => (
             <Route path="/feedback" element={<Feedback />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/driver-login" element={<DriverLogin />} />
+            <Route path="/hero-login" element={<HeroLogin />} />
             <Route path="/student-dashboard" element={<StudentDashboard />} />
             <Route path="/driver-dashboard" element={<DriverDashboard />} />
             {/* Admin dashboard is intentionally not linked in nav and is secret-triggered */}

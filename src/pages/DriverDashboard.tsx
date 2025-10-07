@@ -21,7 +21,13 @@ const DriverDashboard = () => {
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (userData) {
-      setUser(JSON.parse(userData));
+      try {
+        setUser(JSON.parse(userData));
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+        localStorage.removeItem("user");
+        window.location.href = "/";
+      }
     } else {
       // Redirect to home if no user data
       window.location.href = "/";

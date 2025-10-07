@@ -72,8 +72,8 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/driver-login" className="hover:text-primary transition-colors">
-                  Driver Dashboard
+                <Link to="/hero-login" className="hover:text-primary transition-colors">
+                  Hero Login
                 </Link>
               </li>
             </ul>
