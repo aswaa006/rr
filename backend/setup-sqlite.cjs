@@ -52,6 +52,18 @@ try {
     CREATE INDEX IF NOT EXISTS idx_hero_apps_submitted_at ON HeroApplications(submitted_at);
   `);
 
+  // Create Heroes table for hero authentication
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS Heroes (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      email TEXT UNIQUE NOT NULL,
+      password_hash TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+    CREATE INDEX IF NOT EXISTS idx_heroes_email ON Heroes(email);
+  `);
+
   console.log('SQLite setup completed.');
   console.log('Add an admin manually with a hashed password (bcrypt).');
   console.log('Example to insert (run in a Node REPL):');

@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { AdminAuthProvider } from "@/contexts/AdminAuthContext";
 import Index from "./pages/Index";
 import BookRide from "./pages/BookRide";
+import PreBookRide from "./pages/PreBookRide";
 import Payment from "./pages/Payment";
 import RideConfirmation from "./pages/RideConfirmation";
 import HeroRegistration from "./pages/HeroRegistration";
@@ -33,6 +34,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/book-ride" element={<BookRide />} />
+            <Route path="/pre-book-ride" element={<PreBookRide />} />
             <Route path="/payment" element={<Payment />} />
             <Route path="/ride-confirmation" element={<RideConfirmation />} />
             <Route path="/become-hero" element={<HeroRegistration />} />

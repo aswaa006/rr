@@ -11,6 +11,7 @@ import { motion } from "framer-motion";
 import { Bike, Lock, Mail, Eye, EyeOff } from "lucide-react";
 
 const HeroLogin = () => {
+  const BASE_URL = import.meta.env.VITE_ADMIN_API_URL || "http://localhost:4000";
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -33,25 +34,28 @@ const HeroLogin = () => {
     setError("");
 
     try {
-      // Simulate authentication (replace with actual API call)
-      if (formData.email && formData.password) {
-        // Mock successful login
-        const heroData = {
-          name: "Rithika",
-          email: formData.email,
-          role: "driver",
-          id: "DR1023",
-        };
-        
-        // Update authentication context
-        login(heroData);
-        
-        // Navigate to driver dashboard
-        navigate("/driver-dashboard");
-      } else {
+      if (!formData.email || !formData.password) {
         setError("Please fill in all fields");
+        return;
       }
-    } catch (error) {
+
+      const res = await fetch(`${BASE_URL}/api/heroes/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: formData.email, password: formData.password })
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.message || "Invalid credentials");
+      }
+      const data = await res.json();
+
+      // Update authentication context
+      login({ name: data.hero.email.split('@')[0], email: data.hero.email, role: "driver", token: data.token });
+
+      // Navigate to driver dashboard
+      navigate("/driver-dashboard");
+    } catch (error: any) {
       setError("Login failed. Please check your credentials.");
       console.error("Login error:", error);
     } finally {

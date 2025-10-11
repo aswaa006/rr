@@ -7,16 +7,13 @@ import AuthModal from "./AuthModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { loginWithGoogle, logout } from "@/firebase";
 
-
 const Navigation = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [authModal, setAuthModal] = useState({ isOpen: false, userType: "student" as "student" | "hero" });
   const [mobileOpen, setMobileOpen] = useState(false);
 
-
   const { user, login, logout: authLogout } = useAuth();
-
 
   const navItems = [
     { path: "/", label: "Home" },
@@ -24,7 +21,6 @@ const Navigation = () => {
     { path: "/feedback", label: "Feedback" },
     { path: "/contact", label: "Contact" },
   ];
-
 
   const handleBookRideClick = async () => {
     if (!user) {
@@ -34,12 +30,18 @@ const Navigation = () => {
     }
   };
 
+  const handlePreBookRideClick = async () => {
+    if (!user) {
+      setAuthModal({ isOpen: true, userType: "student" });
+    } else {
+      navigate("/pre-book-ride");
+    }
+  };
 
   const handleLogout = async () => {
     await logout();
     authLogout();
   };
-
 
   return (
     <>
@@ -165,15 +167,13 @@ const Navigation = () => {
         <nav className="sticky top-0 z-40 w-full animated-navbar">
           <div className="h-14 sm:h-20 grid grid-cols-12 items-center">
             {/* Desktop logo + title (left) */}
-            <Link 
-              to="/" 
-              className="hidden lg:flex items-center space-x-2 col-span-2"
-            >
+            <Link to="/" className="hidden lg:flex items-center space-x-2 col-span-2">
               <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
                 <span className="text-white font-bold text-sm sm:text-lg">X</span>
               </div>
               <span className="font-bold text-lg sm:text-2xl">PUGO</span>
             </Link>
+
             {/* Center nav buttons (desktop only) */}
             <div className="navbar-btn-group col-span-6">
               {navItems.map((item) => (
@@ -189,29 +189,47 @@ const Navigation = () => {
                 </Link>
               ))}
             </div>
+
             {/* Desktop right actions */}
             <div className="desktop-actions hidden lg:flex items-center space-x-2 xl:space-x-4 col-span-4 justify-end">
-              <Button
-                variant="hero"
-                size="lg"
-                className="text-sm xl:text-md font-semibold px-4 xl:px-6 py-2 rounded-full"
-                onClick={handleBookRideClick}
-              >
-                <span className="hidden xl:inline">Book Ride Now</span>
-                <span className="xl:hidden">Book Ride</span>
-              </Button>
-              <Button 
-                variant="secondary" 
-                size="default" 
-                className="text-sm xl:text-md px-3 xl:px-5 py-2 rounded-full"
-                onClick={() => navigate("/hero-login")}
-              >
-                <span className="hidden xl:inline">Hero Login</span>
-                <span className="xl:hidden">Hero Login</span>
-              </Button>
+              {(!user || user.type === "student") && (
+                <>
+                  <Button
+                    variant="hero"
+                    size="lg"
+                    className="text-sm xl:text-md font-semibold px-4 xl:px-6 py-2 rounded-full"
+                    onClick={handleBookRideClick}
+                  >
+                    <span className="hidden xl:inline">Book Ride Now</span>
+                    <span className="xl:hidden">Book Ride</span>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="text-sm xl:text-md font-semibold px-4 xl:px-6 py-2 rounded-full"
+                    onClick={handlePreBookRideClick}
+                  >
+                    <span className="hidden xl:inline">Pre-Book Ride</span>
+                    <span className="xl:hidden">Pre-Book</span>
+                  </Button>
+                </>
+              )}
+              {(!user || user.type === "student") && (
+                <Button
+                  variant="secondary"
+                  size="default"
+                  className="text-sm xl:text-md px-3 xl:px-5 py-2 rounded-full"
+                  onClick={() => navigate("/hero-login")}
+                >
+                  <span className="hidden xl:inline">Hero Login</span>
+                  <span className="xl:hidden">Hero Login</span>
+                </Button>
+              )}
               {user && (
                 <>
-                  <span className="text-sm xl:text-md text-muted-foreground hidden xl:inline">Welcome, {user.name?.split(" ")[0]}</span>
+                  <span className="text-sm xl:text-md text-muted-foreground hidden xl:inline">
+                    Welcome, {user.name?.split(" ")[0]}
+                  </span>
                   <Button
                     variant="outline"
                     size="default"
@@ -224,7 +242,6 @@ const Navigation = () => {
                 </>
               )}
             </div>
-
 
             {/* Mobile: logo+title centered, hamburger right */}
             <div className="mobile-logo-title lg:hidden col-span-8 flex items-center justify-center">
@@ -289,28 +306,43 @@ const Navigation = () => {
                     ))}
                   </div>
                   <div className="mt-6 grid grid-cols-1 gap-3">
-                    <Button
-                      variant="hero"
-                      size="lg"
-                      className="w-full"
-                      onClick={() => {
-                        setMobileOpen(false);
-                        handleBookRideClick();
-                      }}
-                    >
-                      Book Ride Now
-                    </Button>
-                    <Button 
-                      variant="secondary" 
-                      size="lg" 
-                      className="w-full"
-                      onClick={() => {
-                        setMobileOpen(false);
-                        navigate("/hero-login");
-                      }}
-                    >
-                      Hero Login
-                    </Button>
+                    {( !user || user.type === "student") && (
+                      <>
+                        <Button
+                          variant="hero"
+                          size="lg"
+                          className="w-full"
+                          onClick={() => {
+                            setMobileOpen(false);
+                            handleBookRideClick();
+                          }}
+                        >
+                          Book Ride Now
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="lg"
+                          className="w-full"
+                          onClick={() => {
+                            setMobileOpen(false);
+                            handlePreBookRideClick();
+                          }}
+                        >
+                          Pre-Book Ride
+                        </Button>
+                        <Button 
+                          variant="secondary" 
+                          size="lg" 
+                          className="w-full"
+                          onClick={() => {
+                            setMobileOpen(false);
+                            navigate("/hero-login");
+                          }}
+                        >
+                          Hero Login
+                        </Button>
+                      </>
+                    )}
                     {user && (
                       <div className="pt-2 text-center">
                         <p className="text-sm text-muted-foreground mb-2">Welcome, {user.name?.split(" ")[0]}</p>
@@ -343,6 +375,5 @@ const Navigation = () => {
     </>
   );
 };
-
 
 export default Navigation;

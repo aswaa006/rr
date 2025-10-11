@@ -2,20 +2,18 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import Navigation from "@/components/Navigation";
 import FloatingCTA from "@/components/FloatingCTA";
 import Footer from "@/components/Footer";
-import { Link, useNavigate } from "react-router-dom";
-import { MapPin, Clock, Wallet, AlertCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { MapPin, Wallet } from "lucide-react";
 
 const BookRide = () => {
   const [pickup, setPickup] = useState("");
   const [drop, setDrop] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
-  const [preBooking, setPreBooking] = useState(false);
   const navigate = useNavigate();
 
   const locations = [
@@ -30,18 +28,8 @@ const BookRide = () => {
     "Parking Area"
   ];
 
-  // Check if selected time is at least 2 hours from now
-  const isPreBookingEligible = () => {
-    if (!selectedTime) return false;
-    const now = new Date();
-    const selectedDateTime = new Date(`${new Date().toDateString()} ${selectedTime}`);
-    const timeDiff = selectedDateTime.getTime() - now.getTime();
-    const hoursDiff = timeDiff / (1000 * 60 * 60);
-    return hoursDiff >= 2;
-  };
-
   const calculateFare = () => {
-    return (preBooking && isPreBookingEligible()) ? 25 : 30;
+    return 30;
   };
 
   const canProceed = pickup && drop && pickup !== drop && selectedTime;
@@ -107,48 +95,10 @@ const BookRide = () => {
                 id="time"
                 type="time"
                 value={selectedTime}
-                onChange={(e) => {
-                  setSelectedTime(e.target.value);
-                  // Reset pre-booking if time is not eligible
-                  if (!isPreBookingEligible()) {
-                    setPreBooking(false);
-                  }
-                }}
+                onChange={(e) => setSelectedTime(e.target.value)}
                 required
               />
             </div>
-
-            {selectedTime && !isPreBookingEligible() && (
-              <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg border">
-                <AlertCircle className="w-4 h-4 text-muted-foreground" />
-                <p className="text-sm text-muted-foreground">
-                  Pre-booking is available only 2 hours in advance. Select a later time to save ₹5.
-                </p>
-              </div>
-            )}
-
-            {selectedTime && isPreBookingEligible() && (
-              <div className="flex items-center justify-between p-4 bg-success/5 rounded-lg border-2 border-success/20 gap-3">
-                <div className="flex items-center space-x-3">
-                  <Clock className="w-5 h-5 text-success" />
-                  <div>
-                    <Label htmlFor="prebooking" className="text-base font-medium">
-                      Pre-Book & Save ₹5
-                    </Label>
-                    <p className="text-sm text-muted-foreground">
-                      Book 2+ hours ahead for discount
-                    </p>
-                  </div>
-                </div>
-                <div className="shrink-0">
-                  <Switch
-                    id="prebooking"
-                    checked={preBooking}
-                    onCheckedChange={setPreBooking}
-                  />
-                </div>
-              </div>
-            )}
 
             {canProceed && (
               <Card className="bg-primary/5 border-primary/20">
@@ -159,15 +109,9 @@ const BookRide = () => {
                       <span className="font-medium">Total Fare</span>
                     </div>
                     <div className="text-right">
-                      {preBooking && isPreBookingEligible() && (
-                        <div className="text-sm text-muted-foreground line-through">₹30</div>
-                      )}
                       <div className="text-2xl font-bold text-primary">
                         ₹{calculateFare()}
                       </div>
-                      {preBooking && isPreBookingEligible() && (
-                        <div className="text-sm text-success font-medium">You save ₹5!</div>
-                      )}
                     </div>
                   </div>
                 </CardContent>
@@ -181,15 +125,11 @@ const BookRide = () => {
               disabled={!canProceed}
               onClick={() => {
                 if (!canProceed) return;
-                const eligible = isPreBookingEligible();
-                const fare = preBooking && eligible ? 25 : 30;
                 const details = {
                   pickup,
                   drop,
                   selectedTime,
-                  preBooking,
-                  eligible,
-                  fare,
+                  fare: calculateFare(),
                 };
                 try {
                   localStorage.setItem("bookingDetails", JSON.stringify(details));

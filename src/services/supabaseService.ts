@@ -1,5 +1,6 @@
 // src/services/supabaseService.ts
 import { supabase } from '../firebase';
+import bcrypt from 'bcryptjs';
 
 // Initialize storage setup
 export const initializeStorage = async (): Promise<boolean> => {
@@ -417,6 +418,203 @@ export const getAvailableDrivers = async (): Promise<any[]> => {
   } catch (error) {
     console.error("Error getting available drivers:", error);
     return [];
+  }
+};
+
+// ============================
+// Students auth (custom table)
+// ============================
+
+export interface Student {
+  id: string;
+  full_name: string;
+  email: string;
+}
+
+export interface StudentSignupInput {
+  fullName: string;
+  email: string;
+  password: string;
+}
+
+export interface StudentLoginResult {
+  success: boolean;
+  student?: Student;
+  accessToken?: string | null;
+  error?: string;
+}
+
+// Create a student account:
+// - Hashes password (bcrypt) and inserts row in students
+// - Creates Supabase Auth user with the same credentials to obtain a JWT for RLS
+export const studentSignUp = async (
+  input: StudentSignupInput
+): Promise<StudentLoginResult> => {
+  try {
+    const email = input.email.trim().toLowerCase();
+
+    // Check if email already exists in table
+    const { data: existing, error: existingErr } = await supabase
+      .from('students')
+      .select('id')
+      .eq('email', email)
+      .maybeSingle();
+
+    if (existingErr) {
+      throw existingErr;
+    }
+    if (existing) {
+      return { success: false, error: 'Email already exists' };
+    }
+
+    // Create Supabase Auth user to enable RLS using JWT claims
+    const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
+      email,
+      password: input.password,
+      options: { emailRedirectTo: window.location.origin }
+    });
+    if (signUpErr) {
+      return { success: false, error: signUpErr.message };
+    }
+
+    const authUserId = signUpData.user?.id;
+    if (!authUserId) {
+      return { success: false, error: 'Failed to create auth user' };
+    }
+
+    // Ensure we have a session (some projects require email confirmation and won't auto-sign in)
+    // Try to sign in immediately to obtain a JWT for RLS policies
+    const { error: signinErr } = await supabase.auth.signInWithPassword({ email, password: input.password });
+    if (signinErr) {
+      // If sign in fails here, RLS inserts will fail because auth.uid() is not present
+      return { success: false, error: `Sign in required before creating profile: ${signinErr.message}` };
+    }
+
+    // Preflight: ensure API sees the students table (helps diagnose schema cache or wrong project)
+    const { error: preflightErr } = await supabase
+      .from('students')
+      .select('id')
+      .limit(1);
+    if (preflightErr) {
+      const msg = preflightErr.message || '';
+      if (msg.toLowerCase().includes('relation') && msg.toLowerCase().includes('does not exist')) {
+        return { success: false, error: 'Table public.students not found by API. Create table and reload schema in Supabase, or check project URL/key.' };
+      }
+      if (msg.toLowerCase().includes('schema') && msg.toLowerCase().includes('cache')) {
+        return { success: false, error: 'API schema cache stale. Run: select pg_notify(\'pgrst\', \"reload schema\"); in Supabase SQL.' };
+      }
+      return { success: false, error: `Preflight failed: ${msg}` };
+    }
+
+    // Hash password for storage in students table
+    const passwordHash = await bcrypt.hash(input.password, 10);
+
+    // Insert into students table; use same id as auth user
+    const { data: studentRow, error: insertErr } = await supabase
+      .from('students')
+      .insert({
+        id: authUserId,
+        full_name: input.fullName,
+        email,
+        password_hash: passwordHash
+      })
+      .select('id, full_name, email')
+      .single();
+
+    if (insertErr) {
+      // Gracefully report duplicate email and permission issues
+      const msg = insertErr.message || 'Failed to create student';
+      if (msg.toLowerCase().includes('duplicate') || msg.includes('23505')) {
+        return { success: false, error: 'Email already exists' };
+      }
+      if (msg.toLowerCase().includes('permission') || msg.toLowerCase().includes('rls')) {
+        return { success: false, error: 'Permission denied. Ensure you are signed in before creating profile.' };
+      }
+      return { success: false, error: msg };
+    }
+
+    // Get session token if available
+    const {
+      data: { session }
+    } = await supabase.auth.getSession();
+
+    return {
+      success: true,
+      student: {
+        id: studentRow.id,
+        full_name: studentRow.full_name,
+        email: studentRow.email
+      },
+      accessToken: session?.access_token ?? null
+    };
+  } catch (error: any) {
+    return { success: false, error: error.message || 'Signup failed' };
+  }
+};
+
+// Login a student using custom table verification (bcrypt) and ensure Supabase Auth session
+export const studentLogin = async (
+  emailInput: string,
+  password: string
+): Promise<StudentLoginResult> => {
+  try {
+    const email = emailInput.trim().toLowerCase();
+
+    // Fetch student by email
+    const { data: student, error } = await supabase
+      .from('students')
+      .select('id, full_name, email, password_hash')
+      .eq('email', email)
+      .single();
+
+    if (error || !student) {
+      return { success: false, error: 'Invalid email or password' };
+    }
+
+    // Verify password
+    const isValid = await bcrypt.compare(password, student.password_hash);
+    if (!isValid) {
+      return { success: false, error: 'Invalid email or password' };
+    }
+
+    // Ensure an auth session exists for RLS (password must match supabase auth password set at signup)
+    const { error: authErr } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
+    if (authErr) {
+      return { success: false, error: authErr.message };
+    }
+
+    const {
+      data: { session }
+    } = await supabase.auth.getSession();
+
+    return {
+      success: true,
+      student: {
+        id: student.id,
+        full_name: student.full_name,
+        email: student.email
+      },
+      accessToken: session?.access_token ?? null
+    };
+  } catch (error: any) {
+    return { success: false, error: error.message || 'Login failed' };
+  }
+};
+
+export const getStudentById = async (id: string): Promise<Student | null> => {
+  try {
+    const { data, error } = await supabase
+      .from('students')
+      .select('id, full_name, email')
+      .eq('id', id)
+      .single();
+    if (error) return null;
+    return data as Student;
+  } catch {
+    return null;
   }
 };
 
