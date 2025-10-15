@@ -2,7 +2,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
+import { TransitionPage } from "@/components/animations";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { AdminAuthProvider } from "@/contexts/AdminAuthContext";
 import Index from "./pages/Index";
@@ -23,6 +25,35 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+const AnimatedRoutes = () => {
+  const location = useLocation();
+  return (
+    <AnimatePresence mode="wait">
+      <TransitionPage key={location.pathname}>
+        <Routes location={location}>
+          <Route path="/" element={<Index />} />
+          <Route path="/book-ride" element={<BookRide />} />
+          <Route path="/pre-book-ride" element={<PreBookRide />} />
+          <Route path="/payment" element={<Payment />} />
+          <Route path="/ride-confirmation" element={<RideConfirmation />} />
+          <Route path="/become-hero" element={<HeroRegistration />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/feedback" element={<Feedback />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/driver-login" element={<DriverLogin />} />
+          <Route path="/hero-login" element={<HeroLogin />} />
+          <Route path="/student-dashboard" element={<StudentDashboard />} />
+          <Route path="/driver-dashboard" element={<DriverDashboard />} />
+          {/* Admin dashboard is intentionally not linked in nav and is secret-triggered */}
+          <Route path="/admin" element={<AdminDashboard />} />
+          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </TransitionPage>
+    </AnimatePresence>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
@@ -31,25 +62,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/book-ride" element={<BookRide />} />
-            <Route path="/pre-book-ride" element={<PreBookRide />} />
-            <Route path="/payment" element={<Payment />} />
-            <Route path="/ride-confirmation" element={<RideConfirmation />} />
-            <Route path="/become-hero" element={<HeroRegistration />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/feedback" element={<Feedback />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/driver-login" element={<DriverLogin />} />
-            <Route path="/hero-login" element={<HeroLogin />} />
-            <Route path="/student-dashboard" element={<StudentDashboard />} />
-            <Route path="/driver-dashboard" element={<DriverDashboard />} />
-            {/* Admin dashboard is intentionally not linked in nav and is secret-triggered */}
-            <Route path="/admin" element={<AdminDashboard />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <AnimatedRoutes />
         </BrowserRouter>
       </TooltipProvider>
       </AdminAuthProvider>

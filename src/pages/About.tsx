@@ -5,9 +5,12 @@ import FloatingCTA from "@/components/FloatingCTA";
 import { Link } from "react-router-dom";
 import { Users, Target, Heart, Award } from "lucide-react";
 import Bike from "@/components/ui/bike";
+import { TransitionPage, FadeIn, SlideIn, HoverScale, HoverShadow } from "@/components/animations";
+import CountUp from "@/components/animations/CountUp";
 
 const About = () => {
   return (
+    <TransitionPage>
     <div className="min-h-screen bg-background">
       <Navigation />
       <FloatingCTA />
@@ -15,7 +18,7 @@ const About = () => {
       {/* Hero Section */}
       <section className="py-16 sm:py-20 px-4 bg-gradient-to-br from-primary/10 to-secondary/10">
         <div className="container mx-auto max-w-4xl text-center">
-          <div className="fade-in">
+          <FadeIn>
             <h1 className="text-4xl sm:text-5xl font-bold mb-4 sm:mb-6">
               About <span className="text-primary">PUGO</span>
             </h1>
@@ -23,7 +26,7 @@ const About = () => {
               A student-led initiative revolutionizing campus transportation through 
               community, affordability, and trust.
             </p>
-          </div>
+          </FadeIn>
           {/* Bike animation centered here */}
           <div style={{ margin: "32px 0" }}>
             <Bike />
@@ -35,7 +38,7 @@ const About = () => {
       <section className="py-12 sm:py-16 px-4">
         <div className="container mx-auto max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="slide-up">
+            <SlideIn direction="up">
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
                 <Target className="w-8 h-8 text-primary" />
               </div>
@@ -50,26 +53,28 @@ const About = () => {
                 students who can provide them, creating a sustainable ecosystem that 
                 benefits everyone in our community.
               </p>
-            </div>
+            </SlideIn>
             
-            <Card className="slide-up shadow-lg">
+            <SlideIn direction="up" delay={0.08}>
+            <Card className="shadow-lg">
               <CardContent className="p-8">
                 <div className="text-center space-y-6">
                   <div>
-                    <div className="text-4xl font-bold text-primary">₹30</div>
+                    <div className="text-4xl font-bold text-primary">₹<CountUp to={30} duration={1.1} /></div>
                     <p className="text-muted-foreground">Fixed fare anywhere</p>
                   </div>
                   <div>
-                    <div className="text-4xl font-bold text-secondary">500+</div>
+                    <div className="text-4xl font-bold text-secondary"><CountUp to={500} duration={1.1} />+</div>
                     <p className="text-muted-foreground">Happy riders</p>
                   </div>
                   <div>
-                    <div className="text-4xl font-bold text-success">100+</div>
+                    <div className="text-4xl font-bold text-success"><CountUp to={100} duration={1.1} />+</div>
                     <p className="text-muted-foreground">Student Heroes</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
+            </SlideIn>
           </div>
         </div>
       </section>
@@ -77,15 +82,18 @@ const About = () => {
       {/* Values Section */}
       <section className="py-12 sm:py-16 px-4 bg-muted/30">
         <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-12 fade-in">
+          <FadeIn>
+          <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold mb-3 sm:mb-4">Our Values</h2>
             <p className="text-base sm:text-xl text-muted-foreground">
               The principles that drive everything we do
             </p>
           </div>
+          </FadeIn>
           
           <div className="grid md:grid-cols-3 gap-8">
-            <Card className="slide-up border-2 hover:border-primary/50 transition-all duration-300">
+            <SlideIn direction="up"><HoverScale><HoverShadow>
+            <Card className="border-2 hover:border-primary/50 transition-all duration-300">
               <CardHeader className="text-center">
                 <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Users className="w-8 h-8 text-primary" />
@@ -99,8 +107,10 @@ const About = () => {
                 </p>
               </CardContent>
             </Card>
+            </HoverShadow></HoverScale></SlideIn>
 
-            <Card className="slide-up border-2 hover:border-secondary/50 transition-all duration-300">
+            <SlideIn direction="up" delay={0.06}><HoverScale><HoverShadow>
+            <Card className="border-2 hover:border-secondary/50 transition-all duration-300">
               <CardHeader className="text-center">
                 <div className="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Heart className="w-8 h-8 text-secondary" />
@@ -114,8 +124,10 @@ const About = () => {
                 </p>
               </CardContent>
             </Card>
+            </HoverShadow></HoverScale></SlideIn>
 
-            <Card className="slide-up border-2 hover:border-success/50 transition-all duration-300">
+            <SlideIn direction="up" delay={0.12}><HoverScale><HoverShadow>
+            <Card className="border-2 hover:border-success/50 transition-all duration-300">
               <CardHeader className="text-center">
                 <div className="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Award className="w-8 h-8 text-success" />
@@ -129,6 +141,7 @@ const About = () => {
                 </p>
               </CardContent>
             </Card>
+            </HoverShadow></HoverScale></SlideIn>
           </div>
         </div>
       </section>
@@ -136,14 +149,17 @@ const About = () => {
       {/* Team Section */}
       <section className="py-12 sm:py-16 px-4">
         <div className="container mx-auto max-w-4xl">
-          <div className="text-center mb-12 fade-in">
+          <FadeIn>
+          <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold mb-3 sm:mb-4">The Story Behind PUGO</h2>
             <p className="text-base sm:text-xl text-muted-foreground">
               Founded by students, for students
             </p>
           </div>
+          </FadeIn>
           
-          <Card className="slide-up shadow-lg">
+          <SlideIn direction="up">
+          <Card className="shadow-lg">
             <CardContent className="p-6 sm:p-8">
               <p className="text-base sm:text-lg text-muted-foreground leading-relaxed mb-6">
                 PUGO started when a group of computer science students realized 
@@ -164,13 +180,14 @@ const About = () => {
               </p>
             </CardContent>
           </Card>
+          </SlideIn>
         </div>
       </section>
 
       {/* CTA Section */}
       <section className="py-12 sm:py-16 px-4 bg-gradient-to-r from-primary/5 to-secondary/5">
         <div className="container mx-auto max-w-4xl text-center">
-          <div className="fade-in">
+          <FadeIn>
             <h2 className="text-3xl sm:text-4xl font-bold mb-4 sm:mb-6">Join Our Mission</h2>
             <p className="text-base sm:text-xl text-muted-foreground mb-6 sm:mb-8">
               Be part of the PUGO community and help us make campus transportation 
@@ -179,20 +196,25 @@ const About = () => {
             {/* Fixed mobile responsive button styles here */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/book-ride" className="w-full sm:w-auto">
+                <HoverScale><HoverShadow>
                 <Button variant="hero" size="xl" className="w-full">
                   Start Riding
                 </Button>
+                </HoverShadow></HoverScale>
               </Link>
               <Link to="/become-hero" className="w-full sm:w-auto">
+                <HoverScale><HoverShadow>
                 <Button variant="secondary" size="xl" className="w-full">
                   Become a Hero
                 </Button>
+                </HoverShadow></HoverScale>
               </Link>
             </div>
-          </div>
+          </FadeIn>
         </div>
       </section>
     </div>
+    </TransitionPage>
   );
 };
 

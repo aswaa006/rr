@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import Navigation from "@/components/Navigation";
 import FloatingCTA from "@/components/FloatingCTA";
+import { TransitionPage, FadeIn, SlideIn, HoverScale, HoverShadow } from "@/components/animations";
 import { useToast } from "@/hooks/use-toast";
 import { MessageSquare, Star, ThumbsUp } from "lucide-react";
 import { submitFeedback } from "@/services/supabaseService";
@@ -105,12 +106,14 @@ const Feedback = () => {
 
   if (submitted) {
     return (
+      <TransitionPage>
       <div className="min-h-screen bg-background">
         <Navigation />
         <FloatingCTA />
         
         <div className="container mx-auto max-w-2xl px-4 py-12">
-          <div className="fade-in text-center">
+          <FadeIn>
+          <div className="text-center">
             <div className="w-20 h-20 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-6">
               <ThumbsUp className="w-12 h-12 text-success" />
             </div>
@@ -127,29 +130,37 @@ const Feedback = () => {
                 <p><span className="font-medium">Email:</span> {formData.email}</p>
               </div>
             </div>
+            <HoverScale><HoverShadow>
             <Button variant="hero" size="lg" onClick={() => setSubmitted(false)}>
               Submit Another Feedback
             </Button>
+            </HoverShadow></HoverScale>
           </div>
+          </FadeIn>
         </div>
       </div>
+      </TransitionPage>
     );
   }
 
   return (
+    <TransitionPage>
     <div className="min-h-screen bg-background">
       <Navigation />
       <FloatingCTA />
       
       <div className="container mx-auto max-w-2xl px-4 py-12">
-        <div className="fade-in text-center mb-8">
+        <FadeIn>
+        <div className="text-center mb-8">
           <h1 className="text-4xl font-bold mb-4">Share Your Feedback</h1>
           <p className="text-xl text-muted-foreground">
             Help us improve your PUGO experience
           </p>
         </div>
+        </FadeIn>
 
-        <Card className="slide-up shadow-lg">
+        <SlideIn direction="up">
+        <Card className="shadow-lg">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <MessageSquare className="w-5 h-5 text-primary" />
@@ -214,6 +225,7 @@ const Feedback = () => {
                 </ul>
               </div>
 
+              <HoverScale><HoverShadow>
               <Button 
                 type="submit" 
                 variant="hero" 
@@ -223,11 +235,14 @@ const Feedback = () => {
               >
                 {isSubmitting ? "Submitting..." : "Submit Feedback"}
               </Button>
+              </HoverShadow></HoverScale>
             </form>
           </CardContent>
         </Card>
+        </SlideIn>
       </div>
     </div>
+    </TransitionPage>
   );
 };
 
