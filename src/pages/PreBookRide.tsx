@@ -19,16 +19,23 @@ const PreBookRide = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
+  // All specified location spots
   const locations = [
-    "Main Gate",
+    "Gate 1",
+    "Gate 2", 
+    "Ponlait",
+    "Science Block",
+    "Green Energy Technology",
     "Library",
-    "Hostel A",
-    "Hostel B", 
     "Admin Block",
-    "Canteen",
-    "Sports Complex",
-    "Academic Block",
-    "Parking Area"
+    "Girls Hostel",
+    "Boys Hostel",
+    "Rajiv Gandhi Stadium",
+    "Thiruvalluvar Stadium",
+    "Open Air Theatre",
+    "SJ Campus",
+    "UMISARC",
+    "Mass Media"
   ];
 
   // Check if selected time is at least 1 hour from now

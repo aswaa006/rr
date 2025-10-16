@@ -8,7 +8,11 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAdminAuth } from "@/contexts/AdminAuthContext";
 import AdminLoginModal from "@/components/AdminLoginModal";
-import { Shield, CheckCircle2, XCircle, Clock, MapPin } from "lucide-react";
+import { 
+  Shield, CheckCircle2, XCircle, Clock, MapPin, 
+  User, Car, BarChart3, Calendar, Phone, Mail,
+  Navigation as NavigationIcon, Star, TrendingUp
+} from "lucide-react";
 
 type HeroApplication = {
   id: string;
@@ -34,7 +38,15 @@ type PreBookRide = {
   status: string;
 };
 
+// Types are now imported from rideService
+
 import { getAllDriverApplications, updateDriverApplicationStatus } from '@/services/supabaseService';
+import { 
+  getRideHistory, 
+  getDriverDetails, 
+  type RideHistory, 
+  type DriverDetails 
+} from '@/services/rideService';
 
 // Fetch hero applications from Supabase - called only after login + secret unlocked
 async function fetchHeroApplications(): Promise<HeroApplication[]> {
@@ -88,6 +100,8 @@ async function updatePreBookStatus(id: number, status: string) {
   }
 }
 
+// Mock data removed - now using actual API calls
+
 export default function AdminDashboard() {
   const { isAuthenticated, token } = useAdminAuth();
   const [loginOpen, setLoginOpen] = useState(false);
@@ -97,6 +111,9 @@ export default function AdminDashboard() {
   const [apps, setApps] = useState<HeroApplication[]>([]);
   const [preBookRides, setPreBookRides] = useState<PreBookRide[]>([]);
   const [preBookLoading, setPreBookLoading] = useState(false);
+  const [driverDetails, setDriverDetails] = useState<DriverDetails[]>([]);
+  const [rideHistory, setRideHistory] = useState<RideHistory[]>([]);
+  const [selectedTab, setSelectedTab] = useState("heroes");
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -118,15 +135,22 @@ export default function AdminDashboard() {
       setLoading(true);
       setPreBookLoading(true);
       try {
-        const [heroData, preBookData] = await Promise.all([
+        const [heroData, preBookData, driverData, rideData] = await Promise.all([
           fetchHeroApplications(),
-          fetchPreBookRides()
+          fetchPreBookRides(),
+          getDriverDetails(),
+          getRideHistory()
         ]);
         setApps(heroData);
         setPreBookRides(preBookData);
-      } catch {
+        setDriverDetails(driverData);
+        setRideHistory(rideData);
+      } catch (error) {
+        console.error('Error fetching data:', error);
         setApps([]);
         setPreBookRides([]);
+        setDriverDetails([]);
+        setRideHistory([]);
       } finally {
         setLoading(false);
         setPreBookLoading(false);
@@ -136,6 +160,30 @@ export default function AdminDashboard() {
 
   const hasData = useMemo(() => apps.length > 0, [apps]);
   const hasPreBookData = useMemo(() => preBookRides.length > 0, [preBookRides]);
+  const hasDriverData = useMemo(() => driverDetails.length > 0, [driverDetails]);
+  const hasRideHistoryData = useMemo(() => rideHistory.length > 0, [rideHistory]);
+
+  const totalRides = useMemo(() => 
+    rideHistory.filter(ride => ride.status === 'completed').length, 
+    [rideHistory]
+  );
+
+  const totalEarnings = useMemo(() => 
+    rideHistory
+      .filter(ride => ride.status === 'completed')
+      .reduce((sum, ride) => sum + ride.fare, 0), 
+    [rideHistory]
+  );
+
+  const preBookRidesCount = useMemo(() => 
+    rideHistory.filter(ride => ride.isPreBooking).length, 
+    [rideHistory]
+  );
+
+  const normalRidesCount = useMemo(() => 
+    rideHistory.filter(ride => !ride.isPreBooking).length, 
+    [rideHistory]
+  );
 
   return (
     <div className="min-h-screen bg-background">
@@ -172,9 +220,11 @@ export default function AdminDashboard() {
         )}
 
         {secretUnlocked && isAuthenticated && (
-          <Tabs defaultValue="heroes" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
+          <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="heroes">Hero Applications</TabsTrigger>
+              <TabsTrigger value="drivers">Driver Details</TabsTrigger>
+              <TabsTrigger value="rides">Ride History</TabsTrigger>
               <TabsTrigger value="prebook">Pre-Booked Rides</TabsTrigger>
             </TabsList>
             
@@ -249,6 +299,237 @@ export default function AdminDashboard() {
                   )}
                 </CardContent>
               </Card>
+            </TabsContent>
+
+            <TabsContent value="drivers">
+              <div className="space-y-6">
+                {/* Driver Stats */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <Card className="text-center p-4">
+                    <User className="w-8 h-8 text-primary mx-auto mb-2" />
+                    <h4 className="font-semibold">Total Drivers</h4>
+                    <p className="text-2xl font-bold">{driverDetails.length}</p>
+                  </Card>
+                  <Card className="text-center p-4">
+                    <Car className="w-8 h-8 text-green-500 mx-auto mb-2" />
+                    <h4 className="font-semibold">Online Now</h4>
+                    <p className="text-2xl font-bold">{driverDetails.filter(d => d.isOnline).length}</p>
+                  </Card>
+                  <Card className="text-center p-4">
+                    <BarChart3 className="w-8 h-8 text-blue-500 mx-auto mb-2" />
+                    <h4 className="font-semibold">Total Rides</h4>
+                    <p className="text-2xl font-bold">{totalRides}</p>
+                  </Card>
+                  <Card className="text-center p-4">
+                    <TrendingUp className="w-8 h-8 text-purple-500 mx-auto mb-2" />
+                    <h4 className="font-semibold">Total Earnings</h4>
+                    <p className="text-2xl font-bold">₹{totalEarnings}</p>
+                  </Card>
+                </div>
+
+                {/* Driver Details Table */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Driver Details & Performance</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {!hasDriverData && (
+                      <p className="text-muted-foreground">No driver data found.</p>
+                    )}
+                    {hasDriverData && (
+                      <div className="w-full overflow-x-auto">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Driver Name</TableHead>
+                              <TableHead>Contact</TableHead>
+                              <TableHead>Vehicle</TableHead>
+                              <TableHead>Status</TableHead>
+                              <TableHead>Total Rides</TableHead>
+                              <TableHead>Earnings</TableHead>
+                              <TableHead>Rating</TableHead>
+                              <TableHead>Last Ride</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {driverDetails.map(driver => (
+                              <TableRow key={driver.id}>
+                                <TableCell className="font-medium">{driver.name}</TableCell>
+                                <TableCell>
+                                  <div className="space-y-1">
+                                    <div className="flex items-center gap-1">
+                                      <Phone className="w-3 h-3" />
+                                      <span className="text-sm">{driver.phone}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                      <Mail className="w-3 h-3" />
+                                      <span className="text-sm">{driver.email}</span>
+                                    </div>
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <div className="space-y-1">
+                                    <span className="text-sm font-medium">{driver.vehicleType}</span>
+                                    <div className="text-xs text-muted-foreground">{driver.vehicleNumber}</div>
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <div className="space-y-1">
+                                    <Badge variant={driver.status === 'approved' ? 'default' : 'secondary'}>
+                                      {driver.status}
+                                    </Badge>
+                                    <div className="flex items-center gap-1">
+                                      <div className={`w-2 h-2 rounded-full ${driver.isOnline ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                                      <span className="text-xs">{driver.isOnline ? 'Online' : 'Offline'}</span>
+                                    </div>
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <div className="text-center">
+                                    <span className="text-lg font-semibold">{driver.totalRides}</span>
+                                    <div className="text-xs text-muted-foreground">rides</div>
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <div className="text-center">
+                                    <span className="text-lg font-semibold">₹{driver.totalEarnings}</span>
+                                    <div className="text-xs text-muted-foreground">earned</div>
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <div className="flex items-center gap-1">
+                                    <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                                    <span className="font-semibold">{driver.averageRating}</span>
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <div className="text-sm">
+                                    {driver.lastRideAt ? new Date(driver.lastRideAt).toLocaleDateString() : 'Never'}
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="rides">
+              <div className="space-y-6">
+                {/* Ride Stats */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <Card className="text-center p-4">
+                    <NavigationIcon className="w-8 h-8 text-primary mx-auto mb-2" />
+                    <h4 className="font-semibold">Total Rides</h4>
+                    <p className="text-2xl font-bold">{totalRides}</p>
+                  </Card>
+                  <Card className="text-center p-4">
+                    <Calendar className="w-8 h-8 text-green-500 mx-auto mb-2" />
+                    <h4 className="font-semibold">Pre-Booked</h4>
+                    <p className="text-2xl font-bold">{preBookRidesCount}</p>
+                  </Card>
+                  <Card className="text-center p-4">
+                    <Clock className="w-8 h-8 text-blue-500 mx-auto mb-2" />
+                    <h4 className="font-semibold">Normal Rides</h4>
+                    <p className="text-2xl font-bold">{normalRidesCount}</p>
+                  </Card>
+                  <Card className="text-center p-4">
+                    <TrendingUp className="w-8 h-8 text-purple-500 mx-auto mb-2" />
+                    <h4 className="font-semibold">Total Revenue</h4>
+                    <p className="text-2xl font-bold">₹{totalEarnings}</p>
+                  </Card>
+                </div>
+
+                {/* Ride History Table */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Complete Ride History</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {!hasRideHistoryData && (
+                      <p className="text-muted-foreground">No ride history found.</p>
+                    )}
+                    {hasRideHistoryData && (
+                      <div className="w-full overflow-x-auto">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Date</TableHead>
+                              <TableHead>Driver Name</TableHead>
+                              <TableHead>Driver's Nth Ride</TableHead>
+                              <TableHead>Passenger</TableHead>
+                              <TableHead>Route</TableHead>
+                              <TableHead>Payment Time</TableHead>
+                              <TableHead>Ride Start</TableHead>
+                              <TableHead>Ride End</TableHead>
+                              <TableHead>Fare</TableHead>
+                              <TableHead>Type</TableHead>
+                              <TableHead>Status</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {rideHistory.map(ride => (
+                              <TableRow key={ride.id}>
+                                <TableCell>
+                                  <div className="text-sm font-medium">
+                                    {new Date(ride.date).toLocaleDateString()}
+                                  </div>
+                                </TableCell>
+                                <TableCell className="font-medium">{ride.driverName}</TableCell>
+                                <TableCell>
+                                  <Badge variant="outline">#{ride.driverNthRide}</Badge>
+                                </TableCell>
+                                <TableCell>{ride.passengerName}</TableCell>
+                                <TableCell>
+                                  <div className="flex items-center gap-1">
+                                    <MapPin className="w-3 h-3 text-muted-foreground" />
+                                    <span className="text-sm">{ride.from} → {ride.to}</span>
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <div className="flex items-center gap-1">
+                                    <Clock className="w-3 h-3 text-muted-foreground" />
+                                    <span className="text-sm">{new Date(ride.paymentSuccessTime).toLocaleTimeString()}</span>
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <div className="flex items-center gap-1">
+                                    <Clock className="w-3 h-3 text-muted-foreground" />
+                                    <span className="text-sm">{new Date(ride.rideStartTime).toLocaleTimeString()}</span>
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <div className="flex items-center gap-1">
+                                    <Clock className="w-3 h-3 text-muted-foreground" />
+                                    <span className="text-sm">{new Date(ride.rideEndTime).toLocaleTimeString()}</span>
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <span className="font-semibold">₹{ride.fare}</span>
+                                </TableCell>
+                                <TableCell>
+                                  <Badge variant={ride.isPreBooking ? 'default' : 'secondary'}>
+                                    {ride.isPreBooking ? 'Pre-Book' : 'Normal'}
+                                  </Badge>
+                                </TableCell>
+                                <TableCell>
+                                  <Badge className={ride.status === 'completed' ? 'bg-green-600 hover:bg-green-600' : 'bg-yellow-600 hover:bg-yellow-600'}>
+                                    {ride.status}
+                                  </Badge>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
             </TabsContent>
 
             <TabsContent value="prebook">

@@ -133,6 +133,21 @@ const AuthModal = ({ isOpen, onClose, userType }: AuthModalProps) => {
                     <Button type="submit" variant="hero" className="w-full">
                       Login
                     </Button>
+                    {userType === "student" && (
+                      <div className="text-center">
+                        <Button
+                          type="button"
+                          variant="link"
+                          className="p-0 h-auto text-sm"
+                          onClick={() => {
+                            onClose();
+                            navigate("/passenger-login");
+                          }}
+                        >
+                          Use Enhanced Login
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </form>
               </CardContent>
@@ -237,6 +252,21 @@ const AuthModal = ({ isOpen, onClose, userType }: AuthModalProps) => {
                     <Button type="submit" variant="hero" className="w-full">
                       Create Account
                     </Button>
+                    {userType === "student" && (
+                      <div className="text-center">
+                        <Button
+                          type="button"
+                          variant="link"
+                          className="p-0 h-auto text-sm"
+                          onClick={() => {
+                            onClose();
+                            navigate("/passenger-signup");
+                          }}
+                        >
+                          Use Enhanced Signup
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </form>
               </CardContent>
