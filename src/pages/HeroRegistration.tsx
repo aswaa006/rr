@@ -15,10 +15,14 @@ import { submitDriverRegistration, DriverRegistrationData, initializeStorage } f
 const HeroRegistration = () => {
   const [formData, setFormData] = useState({
     name: "",
+    collegeId: "",
     phone: "",
     vehicleType: "",
     vehicleNumber: "",
-    licenseFile: null as File | null,
+    licenseFrontFile: null as File | null,
+    licenseBackFile: null as File | null,
+    idCardFile: null as File | null,
+    vehiclePhotoFile: null as File | null,
     agreed: false,
   });
   const [submitted, setSubmitted] = useState(false);
@@ -207,6 +211,20 @@ const HeroRegistration = () => {
               </div>
 
               <div className="space-y-2">
+                <Label htmlFor="collegeId" className="flex items-center gap-2">
+                  <Shield className="w-4 h-4" />
+                  College ID Number
+                </Label>
+                <Input
+                  id="collegeId"
+                  value={formData.collegeId}
+                  onChange={(e) => handleInputChange("collegeId", e.target.value)}
+                  placeholder="Enter your college ID number"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
                 <Label htmlFor="phone" className="flex items-center gap-2">
                   <Phone className="w-4 h-4" />
                   Phone Number
@@ -250,22 +268,85 @@ const HeroRegistration = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="licenseFile" className="flex items-center gap-2">
+                <Label htmlFor="licenseFrontFile" className="flex items-center gap-2">
                   <Clock className="w-4 h-4" />
-                  Driving License Photo
+                  Driving License - Front (PDF)
                 </Label>
                 <Input
-                  id="licenseFile"
+                  id="licenseFrontFile"
                   type="file"
-                  accept="image/*,.pdf"
+                  accept=".pdf"
                   onChange={(e) =>
-                    handleInputChange("licenseFile", e.target.files?.[0] ?? null)
+                    handleInputChange("licenseFrontFile", e.target.files?.[0] ?? null)
                   }
                   required
                 />
-                {formData.licenseFile && (
+                {formData.licenseFrontFile && (
                   <p className="text-xs text-muted-foreground mt-1">
-                    {formData.licenseFile.name}
+                    {formData.licenseFrontFile.name}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="licenseBackFile" className="flex items-center gap-2">
+                  <Clock className="w-4 h-4" />
+                  Driving License - Back (PDF)
+                </Label>
+                <Input
+                  id="licenseBackFile"
+                  type="file"
+                  accept=".pdf"
+                  onChange={(e) =>
+                    handleInputChange("licenseBackFile", e.target.files?.[0] ?? null)
+                  }
+                  required
+                />
+                {formData.licenseBackFile && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {formData.licenseBackFile.name}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="idCardFile" className="flex items-center gap-2">
+                  <Shield className="w-4 h-4" />
+                  ID Card Upload (PDF/Image)
+                </Label>
+                <Input
+                  id="idCardFile"
+                  type="file"
+                  accept="image/*,.pdf"
+                  onChange={(e) =>
+                    handleInputChange("idCardFile", e.target.files?.[0] ?? null)
+                  }
+                  required
+                />
+                {formData.idCardFile && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {formData.idCardFile.name}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="vehiclePhotoFile" className="flex items-center gap-2">
+                  <Car className="w-4 h-4" />
+                  Vehicle Photo
+                </Label>
+                <Input
+                  id="vehiclePhotoFile"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) =>
+                    handleInputChange("vehiclePhotoFile", e.target.files?.[0] ?? null)
+                  }
+                  required
+                />
+                {formData.vehiclePhotoFile && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {formData.vehiclePhotoFile.name}
                   </p>
                 )}
               </div>
@@ -327,10 +408,14 @@ const HeroRegistration = () => {
                 className="w-full"
                 disabled={
                   !formData.name ||
+                  !formData.collegeId ||
                   !formData.phone ||
                   !formData.vehicleType ||
                   !formData.vehicleNumber ||
-                  !formData.licenseFile ||
+                  !formData.licenseFrontFile ||
+                  !formData.licenseBackFile ||
+                  !formData.idCardFile ||
+                  !formData.vehiclePhotoFile ||
                   isSubmitting ||
                   !storageInitialized
                 }

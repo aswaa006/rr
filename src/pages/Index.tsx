@@ -12,6 +12,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useState } from "react";
 import AuthModal from "@/components/AuthModal";
 import Bike from "@/components/ui/bike";
+import { FadeIn, SlideIn, HoverScale, HoverShadow, TransitionPage } from "@/components/animations";
 
 
 const Index = () => {
@@ -30,6 +31,7 @@ const Index = () => {
   };
 
   return (
+    <TransitionPage>
     <div className="min-h-screen bg-background">
       <Navigation />
       <FloatingCTA />
@@ -38,7 +40,8 @@ const Index = () => {
       <section className="relative py-12 sm:py-16 lg:py-20 px-4 bg-gradient-to-br from-primary/10 to-secondary/10">
         <div className="container mx-auto max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center">
-            <div className="fade-in order-2 lg:order-1">
+            <FadeIn>
+            <div className="order-2 lg:order-1">
               <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight mb-4 sm:mb-6">
                 Your Ride, Your Campus, Your Price – 
                 <span className="text-primary block sm:inline"> Just ₹30</span>
@@ -48,6 +51,8 @@ const Index = () => {
                 Safe, affordable, and always available.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                <HoverScale>
+                <HoverShadow>
                 <Button 
                   variant="hero" 
                   size="xl" 
@@ -56,20 +61,29 @@ const Index = () => {
                 >
                   Book Ride Now!
                 </Button>
+                </HoverShadow>
+                </HoverScale>
                 <Link to="/become-hero" className="w-full sm:w-auto">
+                  <HoverScale>
+                  <HoverShadow>
                   <Button variant="secondary" size="xl" className="w-full text-base sm:text-lg">
                     Become a Hero
                   </Button>
+                  </HoverShadow>
+                  </HoverScale>
                 </Link>
               </div>
             </div>
-            <div className="slide-up order-1 lg:order-2">
+            </FadeIn>
+            <SlideIn direction="up">
+            <div className="order-1 lg:order-2">
               <img 
                 src={heroImage} 
                 alt="Campus bike taxi service with friendly student drivers"
                 className="rounded-xl sm:rounded-2xl shadow-xl sm:shadow-2xl w-full h-auto max-w-md mx-auto lg:max-w-none"
               />
             </div>
+            </SlideIn>
           </div>
         </div>
       </section>
@@ -77,13 +91,16 @@ const Index = () => {
       {/* Feature Cards */}
       <section className="py-12 sm:py-16 lg:py-20 px-4">
         <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-12 sm:mb-16 fade-in">
+          <FadeIn>
+          <div className="text-center mb-12 sm:mb-16">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4">Why Choose PUGO?</h2>
             <p className="text-base sm:text-lg lg:text-xl text-muted-foreground">Simple, safe, and student-friendly transportation</p>
           </div>
+          </FadeIn>
           
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-            <Card className="slide-up border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-lg">
+            <SlideIn direction="up"><HoverScale><HoverShadow>
+            <Card className="border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-lg">
               <CardHeader className="text-center pb-4">
                 <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Wallet className="w-8 h-8 text-primary" />
@@ -97,8 +114,10 @@ const Index = () => {
                 </CardDescription>
               </CardContent>
             </Card>
+            </HoverShadow></HoverScale></SlideIn>
 
-            <Card className="slide-up border-2 hover:border-secondary/50 transition-all duration-300 hover:shadow-lg">
+            <SlideIn direction="up" delay={0.06}><HoverScale><HoverShadow>
+            <Card className="border-2 hover:border-secondary/50 transition-all duration-300 hover:shadow-lg">
               <CardHeader className="text-center pb-4">
                 <div className="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Users className="w-8 h-8 text-secondary" />
@@ -112,8 +131,10 @@ const Index = () => {
                 </CardDescription>
               </CardContent>
             </Card>
+            </HoverShadow></HoverScale></SlideIn>
 
-            <Card className="slide-up border-2 hover:border-success/50 transition-all duration-300 hover:shadow-lg">
+            <SlideIn direction="up" delay={0.12}><HoverScale><HoverShadow>
+            <Card className="border-2 hover:border-success/50 transition-all duration-300 hover:shadow-lg">
               <CardHeader className="text-center pb-4">
                 <div className="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <MapPin className="w-8 h-8 text-success" />
@@ -127,6 +148,7 @@ const Index = () => {
                 </CardDescription>
               </CardContent>
             </Card>
+            </HoverShadow></HoverScale></SlideIn>
           </div>
         </div>
       </section>
@@ -134,12 +156,13 @@ const Index = () => {
       {/* CTA Section */}
       <section className="py-12 sm:py-16 lg:py-20 px-4 bg-gradient-to-r from-primary/5 to-secondary/5">
         <div className="container mx-auto max-w-4xl text-center">
-          <div className="fade-in">
+          <FadeIn>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6">Ready to Start Your Journey?</h2>
             <p className="text-base sm:text-lg lg:text-xl text-muted-foreground mb-6 sm:mb-8">
               Join thousands of students who trust PUGO for their daily commute
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+              <HoverScale><HoverShadow>
               <Button 
                 variant="hero" 
                 size="xl" 
@@ -148,13 +171,16 @@ const Index = () => {
               >
                 Book Your First Ride
               </Button>
+              </HoverShadow></HoverScale>
               <Link to="/become-hero" className="w-full sm:w-auto">
+                <HoverScale><HoverShadow>
                 <Button variant="secondary" size="xl" className="w-full text-base sm:text-lg">
                   Become a Hero
                 </Button>
+                </HoverShadow></HoverScale>
               </Link>
             </div>
-          </div>
+          </FadeIn>
         </div>
       </section>
       
@@ -170,6 +196,7 @@ const Index = () => {
         userType={authModal.userType}
       />
     </div>
+    </TransitionPage>
   );
 };
 
