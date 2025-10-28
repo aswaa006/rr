@@ -70,7 +70,7 @@ const DriverLogin = () => {
                       <td className="px-4 py-2">Main Gate</td>
                       <td className="px-4 py-2">Hostel A</td>
                       <td className="px-4 py-2">09:30</td>
-                      <td className="px-4 py-2">₹30</td>
+                      <td className="px-4 py-2">₹20</td>
                       <td className="px-4 py-2">Completed</td>
                     </tr>
                     <tr className="border-t">
@@ -86,7 +86,7 @@ const DriverLogin = () => {
                       <td className="px-4 py-2">Admin Block</td>
                       <td className="px-4 py-2">Sports Complex</td>
                       <td className="px-4 py-2">14:40</td>
-                      <td className="px-4 py-2">₹30</td>
+                      <td className="px-4 py-2">₹20</td>
                       <td className="px-4 py-2">Completed</td>
                     </tr>
                   </tbody>

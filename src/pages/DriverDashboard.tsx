@@ -238,7 +238,7 @@ const DriverDashboard = () => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  if (!user) {
+  if (!hero) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -519,7 +519,7 @@ const DriverDashboard = () => {
                 </p>
                 <div className="text-center">
                   <p className="text-lg font-semibold">Ride # {driverStats.totalRides}</p>
-                  <p className="text-sm text-muted-foreground">Earnings: ₹30</p>
+                  <p className="text-sm text-muted-foreground">Earnings: ₹20</p>
                 </div>
                 <Button 
                   className="w-full"

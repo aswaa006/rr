@@ -54,7 +54,7 @@ const Index = () => {
             <div className="order-2 lg:order-1">
               <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight mb-4 sm:mb-6">
                 Your Ride, Your Campus, Your Price – 
-                <span className="text-primary block sm:inline"> Just ₹30</span>
+                <span className="text-primary block sm:inline"> Just ₹20</span>
               </h1>
               <p className="text-base sm:text-lg lg:text-xl text-muted-foreground mb-6 sm:mb-8 leading-relaxed">
                 Hop in with our Heroes and travel anywhere inside campus easily. 
@@ -119,7 +119,7 @@ const Index = () => {
               </CardHeader>
               <CardContent className="text-center">
                 <CardDescription className="text-base leading-relaxed">
-                  Fixed ₹30 fare anywhere inside campus. No surge pricing, no hidden costs. 
+                  Fixed ₹20 fare anywhere inside campus. No surge pricing, no hidden costs. 
                   Budget-friendly rides for every student.
                 </CardDescription>
               </CardContent>

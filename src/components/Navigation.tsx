@@ -166,12 +166,14 @@ const Navigation = () => {
       <div className="glass-background w-full flex justify-center">
         <nav className="sticky top-0 z-40 w-full animated-navbar">
           <div className="h-14 sm:h-20 grid grid-cols-12 items-center">
-            {/* Desktop logo + title (left) */}
-            <Link to="/" className="hidden lg:flex items-center space-x-2 col-span-2">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm sm:text-lg">X</span>
-              </div>
-              <span className="font-bold text-lg sm:text-2xl">PUGO</span>
+            {/* Desktop logo (left) */}
+            <Link to="/" className="hidden lg:flex items-center col-span-2">
+              <img
+                src="/logo.png"
+                alt="PUGO logo"
+                className="h-10 sm:h-12 w-auto select-none"
+                draggable={false}
+              />
             </Link>
 
             {/* Center nav buttons (desktop only) */}
@@ -243,13 +245,15 @@ const Navigation = () => {
               )}
             </div>
 
-            {/* Mobile: logo+title centered, hamburger right */}
+            {/* Mobile: logo centered, hamburger right */}
             <div className="mobile-logo-title lg:hidden col-span-8 flex items-center justify-center">
-              <Link to="/" className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">X</span>
-                </div>
-                <span className="font-bold text-xl">PUGO</span>
+              <Link to="/" className="flex items-center">
+                <img
+                  src="/logo.png"
+                  alt="PUGO logo"
+                  className="h-9 w-auto select-none"
+                  draggable={false}
+                />
               </Link>
             </div>
             <div className="lg:hidden col-span-4 flex justify-end">
@@ -285,11 +289,13 @@ const Navigation = () => {
                 <SheetContent side="right" className="w-[90%] sm:w-[400px] max-w-[400px]" id="mobile-menu">
                   <SheetHeader>
                     <SheetTitle>
-                      <Link to="/" onClick={() => setMobileOpen(false)} className="flex items-center space-x-2">
-                        <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
-                          <span className="text-white font-bold text-lg">X</span>
-                        </div>
-                        <span className="font-bold text-xl">PUGO</span>
+                      <Link to="/" onClick={() => setMobileOpen(false)} className="flex items-center">
+                        <img
+                          src="/logo.png"
+                          alt="PUGO logo"
+                          className="h-9 w-auto select-none"
+                          draggable={false}
+                        />
                       </Link>
                     </SheetTitle>
                   </SheetHeader>
