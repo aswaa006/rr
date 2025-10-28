@@ -6,7 +6,7 @@ type AdminUser = {
 };
 
 // Utility function for safe JSON parsing
-const safeJsonParse = <T>(jsonString: string | null, fallback: T): T => {
+const safeJsonParse = <T,>(jsonString: string | null, fallback: T): T => {
   if (!jsonString || jsonString === 'null' || jsonString === 'undefined') {
     return fallback;
   }
