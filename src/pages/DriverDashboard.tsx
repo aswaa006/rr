@@ -13,7 +13,7 @@ import {
   Calendar, Wallet, CheckCircle, XCircle, Phone, Key, 
   Navigation as NavigationIcon, Star, AlertCircle, Timer
 } from "lucide-react";
-import { logout } from "@/firebase";
+import { useHeroAuth } from "@/contexts/HeroAuthContext";
 import { 
   getRideRequests, 
   acceptRide, 
@@ -37,7 +37,7 @@ interface UserData {
 // Types are now imported from rideService
 
 const DriverDashboard = () => {
-  const [user, setUser] = useState<UserData | null>(null);
+  const { hero, logout: heroLogout, updateHero } = useHeroAuth();
   const [isOnline, setIsOnline] = useState(false);
   const [rideRequests, setRideRequests] = useState<RideRequest[]>([]);
   const [currentRide, setCurrentRide] = useState<CurrentRide | null>(null);
@@ -49,23 +49,11 @@ const DriverDashboard = () => {
   const [rideEnded, setRideEnded] = useState(false);
 
   useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (userData) {
-      try {
-        const user = JSON.parse(userData);
-        setUser(user);
-        // For demo purposes, using a mock driver ID
-        // In production, this should come from the user's driver profile
-        setDriverId("driver-123");
-      } catch (error) {
-        console.error("Error parsing user data:", error);
-        localStorage.removeItem("user");
-        window.location.href = "/";
-      }
-    } else {
-      window.location.href = "/";
+    if (hero) {
+      setDriverId(hero.id);
+      setIsOnline(hero.isOnline || false);
     }
-  }, []);
+  }, [hero]);
 
   useEffect(() => {
     if (isOnline && driverId) {
@@ -125,7 +113,7 @@ const DriverDashboard = () => {
   };
 
   const handleLogout = async () => {
-    await logout();
+    heroLogout();
   };
 
   const toggleOnlineStatus = async () => {
@@ -134,6 +122,8 @@ const DriverDashboard = () => {
     
     if (driverId) {
       await updateDriverStatus(driverId, newStatus);
+      // Update hero context with new online status
+      updateHero({ isOnline: newStatus });
     }
     
     if (!newStatus) {
@@ -268,10 +258,10 @@ const DriverDashboard = () => {
         {/* Welcome Section */}
         <div className="fade-in text-center mb-8 sm:mb-10 lg:mb-12">
           <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-secondary to-primary rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
-            {user.photo ? (
+            {hero?.photo ? (
               <img 
-                src={user.photo} 
-                alt={user.name} 
+                src={hero.photo} 
+                alt={hero.name} 
                 className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover"
               />
             ) : (
@@ -279,7 +269,7 @@ const DriverDashboard = () => {
             )}
           </div>
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4">
-            Welcome, Hero {user.name?.split(' ')[0]}!
+            Welcome, Hero {hero?.name?.split(' ')[0]}!
           </h1>
           <p className="text-sm sm:text-base lg:text-xl text-muted-foreground">
             Ready to help students get around campus?

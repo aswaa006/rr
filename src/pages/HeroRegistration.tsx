@@ -9,6 +9,7 @@ import Navigation from "@/components/Navigation";
 import FloatingCTA from "@/components/FloatingCTA";
 import Footer from "@/components/Footer";
 import { useToast } from "@/hooks/use-toast";
+import { useHeroAuth } from "@/contexts/HeroAuthContext";
 import { User, Phone, Car, Clock, Shield, Loader2 } from "lucide-react";
 import { submitDriverRegistration, DriverRegistrationData, initializeStorage } from "@/services/supabaseService";
 

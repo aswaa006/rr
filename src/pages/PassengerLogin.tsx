@@ -10,6 +10,7 @@ import Footer from "@/components/Footer";
 import { useNavigate } from "react-router-dom";
 import { User, Lock, AlertCircle, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 const PassengerLogin = () => {
   const [formData, setFormData] = useState({
@@ -20,6 +21,7 @@ const PassengerLogin = () => {
   const [error, setError] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -47,11 +49,13 @@ const PassengerLogin = () => {
         id: Date.now().toString(),
         name: "Demo User",
         email: formData.email,
-        type: "student",
-        verified: true
+        role: "student",
+        verified: true,
+        token: `jwt_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
       };
       
-      localStorage.setItem("user", JSON.stringify(userData));
+      // Use AuthContext login method
+      login(userData);
       
       toast({
         title: "Login Successful!",

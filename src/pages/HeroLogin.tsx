@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import Navigation from "@/components/Navigation";
 import FloatingCTA from "@/components/FloatingCTA";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
+import { useHeroAuth } from "@/contexts/HeroAuthContext";
 import { motion } from "framer-motion";
 import { Bike, Lock, Mail, Eye, EyeOff } from "lucide-react";
 
@@ -21,7 +21,7 @@ const HeroLogin = () => {
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login } = useHeroAuth();
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -51,7 +51,21 @@ const HeroLogin = () => {
       const data = await res.json();
 
       // Update authentication context
-      login({ name: data.hero.email.split('@')[0], email: data.hero.email, role: "driver", token: data.token });
+      const heroData = {
+        id: data.hero.id || Date.now().toString(),
+        name: data.hero.name || data.hero.email.split('@')[0],
+        email: data.hero.email,
+        phone: data.hero.phone,
+        licenseNumber: data.hero.licenseNumber,
+        vehicleNumber: data.hero.vehicleNumber,
+        rating: data.hero.rating || 4.5,
+        totalRides: data.hero.totalRides || 0,
+        isOnline: true,
+        verified: data.hero.verified || true,
+        token: data.token
+      };
+      
+      login(heroData);
 
       // Navigate to driver dashboard
       navigate("/driver-dashboard");

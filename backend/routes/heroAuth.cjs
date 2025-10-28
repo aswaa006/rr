@@ -1,6 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
-const Database = require('better-sqlite3');
+const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const jwt = require('jsonwebtoken');
 
@@ -9,26 +9,47 @@ const router = express.Router();
 // Resolve DB path relative to repo root for portability
 const repoRoot = path.resolve(__dirname, '..', '..');
 const dbPath = path.resolve(repoRoot, 'database.db');
-const db = new Database(dbPath);
+
+// Database helper functions
+const dbQuery = (sql, params = []) => {
+  return new Promise((resolve, reject) => {
+    const db = new sqlite3.Database(dbPath);
+    db.all(sql, params, (err, rows) => {
+      db.close();
+      if (err) reject(err);
+      else resolve(rows);
+    });
+  });
+};
+
+const dbRun = (sql, params = []) => {
+  return new Promise((resolve, reject) => {
+    const db = new sqlite3.Database(dbPath);
+    db.run(sql, params, function(err) {
+      db.close();
+      if (err) reject(err);
+      else resolve({ lastID: this.lastID, changes: this.changes });
+    });
+  });
+};
 
 const SECRET_KEY = '4dj8$7!jYt@Lm#Pq9zWxC2RmUvBhY*Gf';
 
 // Hero registration
-router.post('/register', (req, res) => {
+router.post('/register', async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
       return res.status(400).json({ message: 'Email and password are required' });
     }
 
-    const existing = db.prepare('SELECT id FROM Heroes WHERE email = ?').get(email);
-    if (existing) return res.status(409).json({ message: 'Email already registered' });
+    const existing = await dbQuery('SELECT id FROM Heroes WHERE email = ?', [email]);
+    if (existing.length > 0) return res.status(409).json({ message: 'Email already registered' });
 
     const hash = bcrypt.hashSync(password, 10);
-    const stmt = db.prepare('INSERT INTO Heroes (email, password_hash) VALUES (?, ?)');
-    const result = stmt.run(email, hash);
+    const result = await dbRun('INSERT INTO Heroes (email, password_hash) VALUES (?, ?)', [email, hash]);
 
-    return res.status(201).json({ id: result.lastInsertRowid, email });
+    return res.status(201).json({ id: result.lastID, email });
   } catch (err) {
     console.error('Hero register error:', err);
     return res.status(500).json({ message: 'Server error' });
@@ -36,14 +57,15 @@ router.post('/register', (req, res) => {
 });
 
 // Hero login
-router.post('/login', (req, res) => {
+router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
       return res.status(400).json({ message: 'Email and password are required' });
     }
 
-    const hero = db.prepare('SELECT * FROM Heroes WHERE email = ?').get(email);
+    const heroes = await dbQuery('SELECT * FROM Heroes WHERE email = ?', [email]);
+    const hero = heroes[0];
     if (!hero) return res.status(401).json({ message: 'Invalid credentials' });
 
     const valid = bcrypt.compareSync(password, hero.password_hash);

@@ -30,6 +30,16 @@ const Index = () => {
     }
   };
 
+  const handlePreBookRideClick = () => {
+    if (!user) {
+      // User not logged in, show login modal
+      setAuthModal({ isOpen: true, userType: "student" });
+    } else {
+      // User is logged in, navigate to pre-book ride
+      navigate("/pre-book-ride");
+    }
+  };
+
   return (
     <TransitionPage>
     <div className="min-h-screen bg-background">
@@ -142,10 +152,18 @@ const Index = () => {
                 <CardTitle className="text-2xl">Pre-Book & Save</CardTitle>
               </CardHeader>
               <CardContent className="text-center">
-                <CardDescription className="text-base leading-relaxed">
+                <CardDescription className="text-base leading-relaxed mb-4">
                   Book ahead and save ₹5 instantly. Plan your rides and 
                   enjoy guaranteed availability at discounted rates.
                 </CardDescription>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="w-full"
+                  onClick={handlePreBookRideClick}
+                >
+                  Pre-Book Ride
+                </Button>
               </CardContent>
             </Card>
             </HoverShadow></HoverScale></SlideIn>

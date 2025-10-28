@@ -12,6 +12,7 @@ import Footer from "@/components/Footer";
 import { useNavigate } from "react-router-dom";
 import { User, Mail, Phone, GraduationCap, UserCheck, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 const PassengerSignup = () => {
   const [step, setStep] = useState(1); // 1: Registration, 2: OTP Verification
@@ -30,6 +31,7 @@ const PassengerSignup = () => {
   const [sentOtp, setSentOtp] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const departments = [
     "Computer Science",
@@ -161,11 +163,13 @@ const PassengerSignup = () => {
         phone: formData.phone,
         department: formData.department,
         gender: formData.gender,
-        type: "student",
-        verified: true
+        role: "student",
+        verified: true,
+        token: `jwt_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
       };
       
-      localStorage.setItem("user", JSON.stringify(userData));
+      // Use AuthContext login method
+      login(userData);
       
       toast({
         title: "Registration Successful!",

@@ -66,7 +66,189 @@ export interface DriverDetails {
   averageRating: number;
 }
 
+export interface BookingDetails {
+  pickup: string;
+  drop: string;
+  selectedTime: string;
+  gender: string;
+  driverPreference: string;
+  fare: number;
+  availableDrivers: number;
+}
+
 const API_BASE_URL = 'http://localhost:4000/api';
+
+// Mock data for development
+const MOCK_DRIVERS: DriverDetails[] = [
+  {
+    id: '1',
+    name: 'Raj Kumar',
+    phone: '9876543210',
+    email: 'raj@example.com',
+    vehicleType: 'Bike',
+    vehicleNumber: 'HR-26-AX-1234',
+    status: 'approved',
+    totalRides: 45,
+    totalEarnings: 1350,
+    isOnline: true,
+    joinedAt: '2024-01-15',
+    lastRideAt: '2024-10-27',
+    averageRating: 4.5
+  },
+  {
+    id: '2',
+    name: 'Priya Sharma',
+    phone: '9876543211',
+    email: 'priya@example.com',
+    vehicleType: 'Scooter',
+    vehicleNumber: 'HR-26-BY-5678',
+    status: 'approved',
+    totalRides: 32,
+    totalEarnings: 960,
+    isOnline: true,
+    joinedAt: '2024-02-20',
+    lastRideAt: '2024-10-27',
+    averageRating: 4.8
+  },
+  {
+    id: '3',
+    name: 'Amit Singh',
+    phone: '9876543212',
+    email: 'amit@example.com',
+    vehicleType: 'Bike',
+    vehicleNumber: 'HR-26-CZ-9012',
+    status: 'approved',
+    totalRides: 28,
+    totalEarnings: 840,
+    isOnline: false,
+    joinedAt: '2024-03-10',
+    lastRideAt: '2024-10-26',
+    averageRating: 4.2
+  }
+];
+
+// Check driver availability
+export const checkAvailability = async (bookingDetails: BookingDetails): Promise<{ available: boolean; count: number; drivers: DriverDetails[] }> => {
+  try {
+    // Try to fetch from API first
+    const response = await fetch(`${API_BASE_URL}/rides/drivers`);
+    if (response.ok) {
+      const drivers = await response.json();
+      const onlineDrivers = drivers.filter((driver: DriverDetails) => driver.isOnline);
+      
+      // Filter by driver preference if specified
+      let availableCount = onlineDrivers.length;
+      if (bookingDetails.driverPreference && bookingDetails.driverPreference !== "Any") {
+        availableCount = onlineDrivers.filter((driver: DriverDetails) => 
+          driver.gender === bookingDetails.driverPreference || bookingDetails.driverPreference === "Any"
+        ).length;
+      }
+      
+      return {
+        available: availableCount > 0,
+        count: availableCount,
+        drivers: onlineDrivers
+      };
+    }
+  } catch (error) {
+    console.warn('API not available, using mock data:', error);
+  }
+  
+  // Fallback to mock data
+  const onlineDrivers = MOCK_DRIVERS.filter(driver => driver.isOnline);
+  let availableCount = onlineDrivers.length;
+  
+  if (bookingDetails.driverPreference && bookingDetails.driverPreference !== "Any") {
+    availableCount = onlineDrivers.filter(driver => 
+      driver.gender === bookingDetails.driverPreference || bookingDetails.driverPreference === "Any"
+    ).length;
+  }
+  
+  return {
+    available: availableCount > 0,
+    count: availableCount,
+    drivers: onlineDrivers
+  };
+};
+
+// Book a ride
+export const bookRide = async (bookingDetails: BookingDetails): Promise<{ success: boolean; rideId?: string; error?: string }> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/rides/book`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        pickup: bookingDetails.pickup,
+        drop: bookingDetails.drop,
+        scheduledTime: bookingDetails.selectedTime,
+        gender: bookingDetails.gender,
+        driverPreference: bookingDetails.driverPreference,
+        fare: bookingDetails.fare
+      }),
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      return { success: true, rideId: data.rideId };
+    } else {
+      const error = await response.json();
+      return { success: false, error: error.message || 'Failed to book ride' };
+    }
+  } catch (error) {
+    console.warn('API not available, using mock booking:', error);
+    
+    // Mock booking for development
+    const mockRideId = `ride_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return { success: true, rideId: mockRideId };
+  }
+};
+
+// Update ride status
+export const updateRideStatus = async (rideId: string, status: string, otp?: string): Promise<boolean> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/rides/${rideId}/status`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ status, otp }),
+    });
+    return response.ok;
+  } catch (error) {
+    console.warn('API not available, using mock update:', error);
+    // Mock success for development
+    return true;
+  }
+};
+
+// Get ride details
+export const getRideDetails = async (rideId: string): Promise<CurrentRide | null> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/rides/${rideId}`);
+    if (response.ok) {
+      return await response.json();
+    }
+  } catch (error) {
+    console.warn('API not available, using mock ride details:', error);
+  }
+  
+  // Mock ride details for development
+  return {
+    id: rideId,
+    studentName: 'Demo User',
+    studentPhone: '9876543210',
+    fromLocation: 'Gate 1',
+    toLocation: 'Library',
+    otp: '1234',
+    status: 'accepted',
+    acceptedAt: new Date().toISOString(),
+    otpVerifiedAt: new Date().toISOString(),
+    rideStartedAt: new Date().toISOString(),
+    rideEndedAt: new Date().toISOString()
+  };
+};
 
 // Get available ride requests for drivers
 export const getRideRequests = async (): Promise<RideRequest[]> => {
@@ -112,23 +294,6 @@ export const declineRide = async (rideId: string): Promise<boolean> => {
     return response.ok;
   } catch (error) {
     console.error('Error declining ride:', error);
-    return false;
-  }
-};
-
-// Update ride status
-export const updateRideStatus = async (rideId: string, status: string, otp?: string): Promise<boolean> => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/rides/${rideId}/status`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ status, otp }),
-    });
-    return response.ok;
-  } catch (error) {
-    console.error('Error updating ride status:', error);
     return false;
   }
 };
@@ -206,6 +371,6 @@ export const getDriverDetails = async (): Promise<DriverDetails[]> => {
     return await response.json();
   } catch (error) {
     console.error('Error fetching driver details:', error);
-    return [];
+    return MOCK_DRIVERS;
   }
 };

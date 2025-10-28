@@ -10,14 +10,17 @@ import Footer from "@/components/Footer";
 import { useNavigate } from "react-router-dom";
 import { MapPin, Clock, AlertCircle, CheckCircle } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 const PreBookRide = () => {
   const [pickup, setPickup] = useState("");
   const [drop, setDrop] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { toast } = useToast();
 
   // All specified location spots
   const locations = [
@@ -53,6 +56,8 @@ const PreBookRide = () => {
   const handlePreBook = async () => {
     if (!canProceed || !user) return;
     
+    setIsSubmitting(true);
+    
     try {
       const response = await fetch('http://localhost:4000/api/prebook', {
         method: 'POST',
@@ -70,14 +75,27 @@ const PreBookRide = () => {
       });
 
       if (response.ok) {
-        alert('Ride pre-booked successfully! You will be contacted before your scheduled time.');
+        toast({
+          title: "Ride Pre-Booked!",
+          description: "Your ride has been scheduled successfully. You will be contacted before your scheduled time.",
+        });
         navigate('/');
       } else {
-        alert('Failed to pre-book ride. Please try again.');
+        toast({
+          title: "Pre-Booking Failed",
+          description: "Failed to pre-book ride. Please try again.",
+          variant: "destructive",
+        });
       }
     } catch (error) {
       console.error('Error pre-booking ride:', error);
-      alert('Failed to pre-book ride. Please try again.');
+      toast({
+        title: "Pre-Booking Failed",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -181,10 +199,17 @@ const PreBookRide = () => {
               variant="hero" 
               size="xl" 
               className="w-full text-base sm:text-lg" 
-              disabled={!canProceed}
+              disabled={!canProceed || isSubmitting}
               onClick={handlePreBook}
             >
-              Pre-Book Ride
+              {isSubmitting ? (
+                <>
+                  <Clock className="w-4 h-4 mr-2 animate-spin" />
+                  Pre-Booking...
+                </>
+              ) : (
+                "Pre-Book Ride"
+              )}
             </Button>
           </CardContent>
         </Card>

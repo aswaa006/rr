@@ -3,6 +3,8 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -114,6 +116,18 @@ export default function AdminDashboard() {
   const [driverDetails, setDriverDetails] = useState<DriverDetails[]>([]);
   const [rideHistory, setRideHistory] = useState<RideHistory[]>([]);
   const [selectedTab, setSelectedTab] = useState("heroes");
+  const [orgCodeVerified, setOrgCodeVerified] = useState(false);
+  const [orgCode, setOrgCode] = useState("");
+
+  // Handle organization code verification
+  const handleOrgCodeVerify = async () => {
+    if (orgCode === "111223") {
+      setOrgCodeVerified(true);
+      setLoginOpen(true);
+    } else {
+      alert("Invalid organization code");
+    }
+  };
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -121,7 +135,6 @@ export default function AdminDashboard() {
       bufferRef.current = [...bufferRef.current, key].slice(-5);
       if (bufferRef.current.join("") === "11223") {
         setSecretUnlocked(true);
-        setLoginOpen(true);
       }
     };
     window.addEventListener("keydown", onKeyDown);
@@ -207,14 +220,36 @@ export default function AdminDashboard() {
           </Card>
         )}
 
-        {secretUnlocked && !isAuthenticated && (
+        {secretUnlocked && !orgCodeVerified && !isAuthenticated && (
           <Card className="max-w-md mx-auto">
             <CardHeader>
-              <CardTitle>Admin Authentication Required</CardTitle>
+              <CardTitle>Admin Authentication Required - Step 1</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-muted-foreground">Enter organization code to continue.</p>
+              <div className="space-y-2">
+                <Label htmlFor="orgCode">Organization Code</Label>
+                <Input 
+                  id="orgCode"
+                  type="text"
+                  value={orgCode}
+                  onChange={(e) => setOrgCode(e.target.value)}
+                  placeholder="Enter organization code"
+                />
+              </div>
+              <Button className="w-full" onClick={handleOrgCodeVerify}>Verify Code</Button>
+            </CardContent>
+          </Card>
+        )}
+
+        {secretUnlocked && orgCodeVerified && !isAuthenticated && (
+          <Card className="max-w-md mx-auto">
+            <CardHeader>
+              <CardTitle>Admin Authentication Required - Step 2</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground">Log in to access the dashboard.</p>
-              <Button className="mt-4" onClick={() => setLoginOpen(true)}>Open Login</Button>
+              <p className="text-muted-foreground">Log in with your username and password.</p>
+              <Button className="mt-4 w-full" onClick={() => setLoginOpen(true)}>Open Login</Button>
             </CardContent>
           </Card>
         )}

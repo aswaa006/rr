@@ -2,13 +2,34 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Navigation from "@/components/Navigation";
 import FloatingCTA from "@/components/FloatingCTA";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Users, Target, Heart, Award } from "lucide-react";
 import Bike from "@/components/ui/bike";
 import { TransitionPage, FadeIn, SlideIn, HoverScale, HoverShadow } from "@/components/animations";
 import CountUp from "@/components/animations/CountUp";
+import { useAuth } from "@/contexts/AuthContext";
+import { useState } from "react";
+import AuthModal from "@/components/AuthModal";
 
 const About = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [authModal, setAuthModal] = useState({ isOpen: false, userType: "student" as "student" | "hero" });
+
+  const handleStartRidingClick = () => {
+    if (!user) {
+      // User not logged in, show login modal
+      setAuthModal({ isOpen: true, userType: "student" });
+    } else {
+      // User is logged in, navigate to book ride
+      navigate("/book-ride");
+    }
+  };
+
+  const handleBecomeHeroClick = () => {
+    // Navigate to hero login page
+    navigate("/hero-login");
+  };
   return (
     <TransitionPage>
     <div className="min-h-screen bg-background">
@@ -195,24 +216,26 @@ const About = () => {
             </p>
             {/* Fixed mobile responsive button styles here */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/book-ride" className="w-full sm:w-auto">
-                <HoverScale><HoverShadow>
-                <Button variant="hero" size="xl" className="w-full">
-                  Start Riding
-                </Button>
-                </HoverShadow></HoverScale>
-              </Link>
-              <Link to="/become-hero" className="w-full sm:w-auto">
-                <HoverScale><HoverShadow>
-                <Button variant="secondary" size="xl" className="w-full">
-                  Become a Hero
-                </Button>
-                </HoverShadow></HoverScale>
-              </Link>
+              <HoverScale><HoverShadow>
+              <Button variant="hero" size="xl" className="w-full" onClick={handleStartRidingClick}>
+                Start Riding
+              </Button>
+              </HoverShadow></HoverScale>
+              <HoverScale><HoverShadow>
+              <Button variant="secondary" size="xl" className="w-full" onClick={handleBecomeHeroClick}>
+                Become a Hero
+              </Button>
+              </HoverShadow></HoverScale>
             </div>
           </FadeIn>
         </div>
       </section>
+      
+      <AuthModal 
+        isOpen={authModal.isOpen}
+        onClose={() => setAuthModal({ ...authModal, isOpen: false })}
+        userType={authModal.userType}
+      />
     </div>
     </TransitionPage>
   );

@@ -11,9 +11,15 @@ import FloatingCTA from "@/components/FloatingCTA";
 import Footer from "@/components/Footer";
 import { useNavigate } from "react-router-dom";
 import { MapPin, Wallet, Users, Clock, AlertCircle, CheckCircle } from "lucide-react";
-import { getDriverDetails } from "@/services/rideService";
+import { checkAvailability, bookRide } from "@/services/rideService";
+import { useAuth } from "@/contexts/AuthContext";
+import AuthModal from "@/components/AuthModal";
+import { useToast } from "@/hooks/use-toast";
 
 const BookRide = () => {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [authModal, setAuthModal] = useState({ isOpen: false, userType: "student" as "student" | "hero" });
   const [pickup, setPickup] = useState("");
   const [drop, setDrop] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
@@ -23,7 +29,16 @@ const BookRide = () => {
   const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
   const [availabilityChecked, setAvailabilityChecked] = useState(false);
   const [noDriversAvailable, setNoDriversAvailable] = useState(false);
+  const [selectedDriver, setSelectedDriver] = useState<any>(null);
+  const [isBooking, setIsBooking] = useState(false);
   const navigate = useNavigate();
+
+  // Check if user is logged in
+  useEffect(() => {
+    if (!user) {
+      setAuthModal({ isOpen: true, userType: "student" });
+    }
+  }, [user]);
 
   // All specified location spots
   const locations = [
@@ -50,36 +65,112 @@ const BookRide = () => {
 
   // Check driver availability
   const checkDriverAvailability = async () => {
+    if (!pickup || !drop) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in both pickup and drop locations.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsCheckingAvailability(true);
+    setAvailabilityChecked(false);
     setNoDriversAvailable(false);
-    
+    setSelectedDriver(null);
+
     try {
-      const drivers = await getDriverDetails();
-      const onlineDrivers = drivers.filter(driver => driver.isOnline);
-      
-      // Filter by driver preference if specified
-      let availableCount = onlineDrivers.length;
-      if (driverPreference && driverPreference !== "Any") {
-        availableCount = onlineDrivers.filter(driver => 
-          driver.gender === driverPreference || driverPreference === "Any"
-        ).length;
-      }
-      
-      setAvailableDrivers(availableCount);
-      setAvailabilityChecked(true);
-      
-      if (availableCount === 0) {
+      const availability = await checkAvailability({
+        pickup,
+        drop,
+        time: selectedTime,
+        gender: gender,
+        driverPreference: driverPreference
+      });
+
+      if (availability.available && availability.drivers.length > 0) {
+        setAvailableDrivers(availability.drivers.length);
+        setSelectedDriver(availability.drivers[0]); // Select first available driver
+        setAvailabilityChecked(true);
+        toast({
+          title: "Drivers Available!",
+          description: `Found ${availability.drivers.length} driver(s) near you.`,
+        });
+      } else {
         setNoDriversAvailable(true);
+        toast({
+          title: "No Drivers Available",
+          description: "Sorry, no drivers are available in your area right now. Please try again later.",
+          variant: "destructive",
+        });
       }
     } catch (error) {
-      console.error('Error checking driver availability:', error);
-      setNoDriversAvailable(true);
+      console.error('Error checking availability:', error);
+      toast({
+        title: "Error",
+        description: "Failed to check driver availability. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsCheckingAvailability(false);
     }
   };
 
   const canProceed = pickup && drop && pickup !== drop && selectedTime && gender && availabilityChecked && !noDriversAvailable;
+
+  const handleProceedToPayment = async () => {
+    if (!selectedDriver) {
+      toast({
+        title: "No Driver Selected",
+        description: "Please check driver availability first.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsBooking(true);
+    
+    try {
+      const rideData = {
+        pickup,
+        drop,
+        time: selectedTime,
+        gender,
+        driverPreference: driverPreference || "Any",
+        fare: calculateFare(),
+        driverId: selectedDriver.id,
+        driverName: selectedDriver.name,
+        driverPhone: selectedDriver.phone,
+        driverRating: selectedDriver.rating
+      };
+
+      const booking = await bookRide(rideData);
+      
+      // Store booking details for payment and confirmation pages
+      localStorage.setItem("bookingDetails", JSON.stringify({
+        ...rideData,
+        bookingId: booking.id,
+        status: booking.status,
+        estimatedTime: booking.estimatedTime
+      }));
+
+      toast({
+        title: "Ride Booked!",
+        description: "Your ride has been booked successfully. Proceeding to payment.",
+      });
+
+      navigate("/payment");
+    } catch (error) {
+      console.error('Error booking ride:', error);
+      toast({
+        title: "Booking Failed",
+        description: "Failed to book your ride. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsBooking(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -274,23 +365,17 @@ const BookRide = () => {
                     variant="hero" 
                     size="lg" 
                     className="flex-1"
-                    onClick={() => {
-                      const details = {
-                        pickup,
-                        drop,
-                        selectedTime,
-                        gender,
-                        driverPreference: driverPreference || "Any",
-                        fare: calculateFare(),
-                        availableDrivers
-                      };
-                      try {
-                        localStorage.setItem("bookingDetails", JSON.stringify(details));
-                      } catch {}
-                      navigate("/payment");
-                    }}
+                    onClick={handleProceedToPayment}
+                    disabled={isBooking}
                   >
-                    Proceed for Payment
+                    {isBooking ? (
+                      <>
+                        <Clock className="w-4 h-4 mr-2 animate-spin" />
+                        Booking...
+                      </>
+                    ) : (
+                      "Proceed for Payment"
+                    )}
                   </Button>
                 </div>
               </div>
@@ -311,6 +396,11 @@ const BookRide = () => {
         </Card>
       </div>
       <Footer />
+      <AuthModal 
+        isOpen={authModal.isOpen}
+        onClose={() => setAuthModal({ ...authModal, isOpen: false })}
+        userType={authModal.userType}
+      />
     </div>
   );
 };

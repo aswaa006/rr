@@ -1,8 +1,26 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Instagram, Twitter, Youtube, Mail, Phone } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useState } from "react";
+import AuthModal from "./AuthModal";
 
 const Footer = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [authModal, setAuthModal] = useState({ isOpen: false, userType: "student" as "student" | "hero" });
+
+  const handleBookRideClick = () => {
+    if (!user) {
+      setAuthModal({ isOpen: true, userType: "student" });
+    } else {
+      navigate("/book-ride");
+    }
+  };
+
+  const handleBecomeHeroClick = () => {
+    navigate("/hero-login");
+  };
   const socialLinks = [
     {
       name: "Instagram",
@@ -62,14 +80,20 @@ const Footer = () => {
             <h3 className="font-semibold mb-3 sm:mb-4 text-sm sm:text-base">Services</h3>
             <ul className="space-y-2 text-muted-foreground text-sm sm:text-base">
               <li>
-                <Link to="/book-ride" className="hover:text-primary transition-colors">
+                <button 
+                  onClick={handleBookRideClick}
+                  className="hover:text-primary transition-colors text-left"
+                >
                   Book a Ride
-                </Link>
+                </button>
               </li>
               <li>
-                <Link to="/become-hero" className="hover:text-primary transition-colors">
+                <button 
+                  onClick={handleBecomeHeroClick}
+                  className="hover:text-primary transition-colors text-left"
+                >
                   Become a Hero
-                </Link>
+                </button>
               </li>
               <li>
                 <Link to="/hero-login" className="hover:text-primary transition-colors">
@@ -118,6 +142,12 @@ const Footer = () => {
           </div>
         </div>
       </div>
+      
+      <AuthModal 
+        isOpen={authModal.isOpen}
+        onClose={() => setAuthModal({ ...authModal, isOpen: false })}
+        userType={authModal.userType}
+      />
     </footer>
   );
 };
